@@ -6,6 +6,7 @@ import ForClients from '../components/ForClients'
 import ForTrainers from '../components/ForTrainers'
 import AppPreview from '../components/AppPreview'
 import CTA from '../components/CTA'
+import Footer from '../components/Footer'
 
 function LandingPage() {
   return (
@@ -20,6 +21,7 @@ function LandingPage() {
         <ForTrainers />
         <AppPreview />
         <CTA />
+        <Footer />
       </main>
     </>
   )

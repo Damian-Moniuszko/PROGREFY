@@ -1,0 +1,162 @@
+.footer {
+  padding: 100px 32px 30px;
+
+  background-color: var(--color-black);
+}
+
+.footer__container {
+  width: 100%;
+  max-width: 1400px;
+
+  margin: 0 auto;
+}
+
+/* MAIN */
+
+.footer__main {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 80px;
+
+  padding-bottom: 100px;
+}
+
+.footer__brand {
+  flex: 1;
+}
+
+.footer__brand h2 {
+  margin: 0;
+
+  font-size: 28px;
+
+  letter-spacing: -0.05em;
+}
+
+.footer__brand p {
+  margin: 22px 0 0;
+
+  color: var(--color-light-gray);
+
+  font-size: 16px;
+
+  line-height: 1.6;
+}
+
+/* LINKS */
+
+.footer__links {
+  display: grid;
+
+  grid-template-columns: repeat(3, 150px);
+
+  gap: 60px;
+}
+
+.footer__column {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 15px;
+}
+
+.footer__column span {
+  margin-bottom: 8px;
+
+  color: var(--color-green-light);
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.14em;
+}
+
+.footer__column a {
+  color: var(--color-light-gray);
+
+  font-size: 13px;
+
+  text-decoration: none;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.footer__column a:hover {
+  color: var(--color-white);
+
+  transform: translateX(3px);
+}
+
+/* BOTTOM */
+
+.footer__bottom {
+  display: flex;
+
+  justify-content: space-between;
+
+  padding-top: 25px;
+
+  border-top: 1px solid var(--color-gray);
+
+  color: var(--color-light-gray);
+
+  font-size: 10px;
+
+  letter-spacing: 0.03em;
+}
+
+/* TABLET */
+
+@media (max-width: 900px) {
+  .footer__main {
+    flex-direction: column;
+
+    gap: 70px;
+  }
+
+  .footer__links {
+    grid-template-columns: repeat(3, 1fr);
+
+    max-width: 600px;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .footer {
+    padding: 80px 20px 25px;
+  }
+
+  .footer__main {
+    gap: 60px;
+
+    padding-bottom: 70px;
+  }
+
+  .footer__brand h2 {
+    font-size: 25px;
+  }
+
+  .footer__links {
+    grid-template-columns: 1fr 1fr;
+
+    gap: 50px 30px;
+  }
+
+  .footer__column:last-child {
+    grid-column: span 2;
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+
+    gap: 10px;
+  }
+}
