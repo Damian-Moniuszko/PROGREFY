@@ -5,6 +5,7 @@ import HowItWorks from '../components/HowItWorks'
 import ForClients from '../components/ForClients'
 import ForTrainers from '../components/ForTrainers'
 import AppPreview from '../components/AppPreview'
+import CTA from '../components/CTA'
 
 function LandingPage() {
   return (
@@ -18,6 +19,7 @@ function LandingPage() {
         <ForClients />
         <ForTrainers />
         <AppPreview />
+        <CTA />
       </main>
     </>
   )
