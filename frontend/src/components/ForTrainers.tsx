@@ -43,7 +43,7 @@ const appointments = [
 
 function ForTrainers() {
   return (
-    <section className="for-trainers">
+    <section className="for-trainers" id="trainers">
       <div className="for-trainers__container">
         <div className="for-trainers__header">
           <p className="for-trainers__eyebrow">DLA TRENERÓW</p>

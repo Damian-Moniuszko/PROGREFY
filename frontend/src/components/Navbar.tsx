@@ -9,7 +9,7 @@ function Navbar() {
   }
 
   return (
-    <header className="navbar" id="top">
+    <header className="navbar">
       <nav className="navbar__container">
 
         <a

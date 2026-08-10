@@ -25,7 +25,7 @@ const clientFeatures = [
 
 function ForClients() {
   return (
-    <section className="for-clients">
+    <section className="for-clients" id="clients">
       <div className="for-clients__container">
         <div className="for-clients__header">
           <p className="for-clients__eyebrow">DLA KLIENTÓW</p>

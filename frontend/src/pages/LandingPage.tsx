@@ -13,7 +13,7 @@ function LandingPage() {
     <>
       <Navbar />
 
-      <main>
+      <main id="top">
         <Hero />
         <Features />
         <HowItWorks />

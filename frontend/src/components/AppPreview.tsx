@@ -2,7 +2,7 @@ import './AppPreview.css'
 
 function AppPreview() {
   return (
-    <section className="app-preview">
+    <section className="app-preview" id="app">
       <div className="app-preview__container">
         <div className="app-preview__header">
           <p className="app-preview__eyebrow">FITBOOK APP</p>
