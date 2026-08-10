@@ -1,0 +1,441 @@
+.app-preview {
+  padding: 160px 32px;
+
+  background-color: var(--color-dark);
+}
+
+.app-preview__container {
+  width: 100%;
+  max-width: 1400px;
+
+  margin: 0 auto;
+}
+
+.app-preview__header {
+  max-width: 800px;
+
+  margin-bottom: 90px;
+}
+
+.app-preview__eyebrow {
+  margin: 0 0 20px;
+
+  color: var(--color-green-light);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+.app-preview__title {
+  margin: 0;
+
+  font-size: clamp(48px, 6vw, 82px);
+
+  line-height: 0.98;
+
+  letter-spacing: -0.055em;
+}
+
+.app-preview__title span {
+  color: var(--color-green-light);
+}
+
+.app-preview__description {
+  max-width: 600px;
+
+  margin: 30px 0 0;
+
+  color: var(--color-light-gray);
+
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+/* GRID */
+
+.app-preview__grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 20px;
+}
+
+/* CARDS */
+
+.preview-card {
+  position: relative;
+
+  min-height: 380px;
+
+  padding: 26px;
+
+  overflow: hidden;
+
+  border: 1px solid var(--color-gray);
+
+  border-radius: 18px;
+
+  background-color: var(--color-black);
+
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+}
+
+.preview-card--progress {
+  grid-column: span 2;
+  min-height: 430px;
+}
+
+.preview-card__top {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid var(--color-dark-gray);
+
+  color: var(--color-light-gray);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+}
+
+/* CALENDAR */
+
+.calendar {
+  padding-top: 40px;
+}
+
+.calendar__days,
+.calendar__dates {
+  display: grid;
+
+  grid-template-columns: repeat(7, 1fr);
+
+  gap: 8px;
+
+  text-align: center;
+}
+
+.calendar__days span {
+  color: var(--color-light-gray);
+
+  font-size: 9px;
+}
+
+.calendar__dates {
+  margin-top: 16px;
+}
+
+.calendar__dates span {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  margin: 0 auto;
+
+  border-radius: 50%;
+
+  color: var(--color-white);
+
+  font-size: 12px;
+}
+
+.calendar__dates .is-active {
+  background-color: var(--color-green-light);
+
+  color: var(--color-black);
+
+  font-weight: 700;
+}
+
+.calendar__appointment {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-top: 40px;
+
+  padding: 20px;
+
+  border: 1px solid var(--color-dark-gray);
+
+  border-radius: 12px;
+
+  background-color: rgba(255, 255, 255, 0.025);
+}
+
+.calendar__appointment div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.calendar__appointment span {
+  color: var(--color-green-light);
+
+  font-size: 11px;
+}
+
+.calendar__appointment strong {
+  font-size: 15px;
+}
+
+.calendar__appointment small {
+  color: var(--color-light-gray);
+
+  font-size: 10px;
+}
+
+/* WORKOUT */
+
+.workout {
+  padding-top: 32px;
+}
+
+.workout__header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-end;
+
+  margin-bottom: 22px;
+}
+
+.workout__header span {
+  color: var(--color-green-light);
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.1em;
+}
+
+.workout__header h3 {
+  margin: 6px 0 0;
+
+  font-size: 30px;
+
+  letter-spacing: -0.04em;
+}
+
+.workout__header > strong {
+  color: var(--color-light-gray);
+
+  font-size: 10px;
+}
+
+.exercise {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 16px 0;
+
+  border-top: 1px solid var(--color-dark-gray);
+}
+
+.exercise div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.exercise strong {
+  font-size: 13px;
+}
+
+.exercise span {
+  color: var(--color-light-gray);
+
+  font-size: 10px;
+}
+
+.exercise b {
+  color: var(--color-green-light);
+
+  font-size: 12px;
+}
+
+/* PROGRESS */
+
+.progress {
+  padding-top: 38px;
+}
+
+.progress__header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: flex-end;
+
+  margin-bottom: 30px;
+}
+
+.progress__header div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.progress__header span {
+  color: var(--color-light-gray);
+
+  font-size: 11px;
+}
+
+.progress__header strong {
+  font-size: 34px;
+
+  letter-spacing: -0.04em;
+}
+
+.progress__header small {
+  color: var(--color-green-light);
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.chart {
+  position: relative;
+
+  height: 230px;
+}
+
+.chart__line {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+
+  height: 1px;
+
+  background-color: var(--color-dark-gray);
+}
+
+.chart__line--one {
+  top: 20%;
+}
+
+.chart__line--two {
+  top: 50%;
+}
+
+.chart__line--three {
+  top: 80%;
+}
+
+.chart__graph {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  color: var(--color-green-light);
+}
+
+.chart__labels {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-top: 8px;
+
+  color: var(--color-light-gray);
+
+  font-size: 9px;
+}
+
+/* TABLET */
+
+@media (max-width: 900px) {
+  .app-preview {
+    padding: 120px 24px;
+  }
+
+  .app-preview__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-card--progress {
+    grid-column: auto;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .app-preview {
+    padding: 90px 20px;
+  }
+
+  .app-preview__header {
+    margin-bottom: 60px;
+  }
+
+  .app-preview__description {
+    font-size: 16px;
+  }
+
+  .preview-card {
+    min-height: auto;
+
+    padding: 20px;
+
+    border-radius: 14px;
+  }
+
+  .calendar {
+    padding-top: 30px;
+  }
+
+  .calendar__appointment {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 14px;
+  }
+
+  .workout__header {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+  .progress__header strong {
+    font-size: 28px;
+  }
+
+  .chart {
+    height: 180px;
+  }
+}

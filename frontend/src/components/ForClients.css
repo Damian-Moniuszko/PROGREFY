@@ -1,0 +1,366 @@
+.for-clients {
+  padding: 160px 32px;
+  background-color: var(--color-dark);
+}
+
+.for-clients__container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.for-clients__header {
+  max-width: 760px;
+  margin-bottom: 90px;
+}
+
+.for-clients__eyebrow {
+  margin: 0 0 20px;
+
+  color: var(--color-green-light);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.for-clients__title {
+  margin: 0;
+
+  font-size: clamp(48px, 6vw, 82px);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.for-clients__title span {
+  color: var(--color-green-light);
+}
+
+.for-clients__description {
+  max-width: 600px;
+  margin: 30px 0 0;
+
+  color: var(--color-light-gray);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.for-clients__layout {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 80px;
+  align-items: center;
+}
+
+/* Dashboard */
+
+.client-dashboard {
+  padding: 24px;
+
+  border: 1px solid var(--color-gray);
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(36, 86, 63, 0.12),
+      rgba(10, 10, 10, 0.98) 50%
+    );
+
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.45);
+}
+
+.client-dashboard__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid var(--color-dark-gray);
+
+  font-size: 13px;
+}
+
+.client-dashboard__icons {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  color: var(--color-light-gray);
+  font-size: 11px;
+}
+
+.client-dashboard__icons span:first-child {
+  color: var(--color-green-light);
+  font-size: 8px;
+}
+
+.client-dashboard__content {
+  padding: 32px 12px 12px;
+}
+
+.client-dashboard__greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-bottom: 36px;
+}
+
+.client-dashboard__greeting span {
+  color: var(--color-light-gray);
+  font-size: 12px;
+}
+
+.client-dashboard__greeting h3 {
+  margin: 0;
+
+  font-size: 28px;
+  letter-spacing: -0.04em;
+}
+
+.client-dashboard__section-label {
+  margin-bottom: 12px;
+
+  color: var(--color-light-gray);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.client-dashboard__workout {
+  display: grid;
+  grid-template-columns: 90px 1fr auto;
+  gap: 20px;
+  align-items: center;
+
+  margin-bottom: 32px;
+  padding: 20px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 12px;
+
+  background-color: rgba(255, 255, 255, 0.025);
+}
+
+.client-dashboard__workout-date {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.client-dashboard__workout-date span {
+  color: var(--color-green-light);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.client-dashboard__workout-date strong {
+  font-size: 22px;
+}
+
+.client-dashboard__workout-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.client-dashboard__workout-info strong {
+  font-size: 14px;
+}
+
+.client-dashboard__workout-info span {
+  color: var(--color-light-gray);
+  font-size: 11px;
+}
+
+.client-dashboard__workout button {
+  padding: 9px 14px;
+
+  border: 1px solid var(--color-gray);
+  border-radius: 7px;
+
+  background-color: transparent;
+  color: var(--color-white);
+
+  font-size: 11px;
+}
+
+.client-dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+
+  margin-bottom: 30px;
+}
+
+.client-dashboard__stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  padding: 16px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 10px;
+
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.client-dashboard__stats span {
+  color: var(--color-light-gray);
+  font-size: 10px;
+}
+
+.client-dashboard__stats strong {
+  font-size: 20px;
+}
+
+.client-dashboard__stats small {
+  color: var(--color-green-light);
+  font-size: 10px;
+}
+
+.client-dashboard__progress {
+  padding: 18px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 10px;
+}
+
+.client-dashboard__progress-header {
+  display: flex;
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+
+  font-size: 11px;
+}
+
+.client-dashboard__progress-header span {
+  color: var(--color-light-gray);
+}
+
+.client-dashboard__progress-header strong {
+  color: var(--color-green-light);
+}
+
+.client-dashboard__progress-bar {
+  height: 6px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+  background-color: var(--color-gray);
+}
+
+.client-dashboard__progress-bar div {
+  width: 72%;
+  height: 100%;
+
+  border-radius: inherit;
+  background-color: var(--color-green-light);
+}
+
+/* Features */
+
+.for-clients__features {
+  display: flex;
+  flex-direction: column;
+}
+
+.client-feature {
+  display: grid;
+  grid-template-columns: 45px 1fr;
+  gap: 20px;
+
+  padding: 28px 0;
+
+  border-top: 1px solid var(--color-gray);
+}
+
+.client-feature:last-child {
+  border-bottom: 1px solid var(--color-gray);
+}
+
+.client-feature__number {
+  color: var(--color-green-light);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.client-feature h3 {
+  margin: 0;
+
+  font-size: 22px;
+  letter-spacing: -0.03em;
+}
+
+.client-feature p {
+  max-width: 420px;
+  margin: 10px 0 0;
+
+  color: var(--color-light-gray);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+/* Tablet */
+
+@media (max-width: 1000px) {
+  .for-clients {
+    padding: 120px 24px;
+  }
+
+  .for-clients__layout {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+
+  .client-dashboard {
+    max-width: 750px;
+  }
+}
+
+/* Telefon */
+
+@media (max-width: 600px) {
+  .for-clients {
+    padding: 90px 20px;
+  }
+
+  .for-clients__header {
+    margin-bottom: 60px;
+  }
+
+  .for-clients__description {
+    font-size: 16px;
+  }
+
+  .client-dashboard {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .client-dashboard__content {
+    padding: 24px 4px 4px;
+  }
+
+  .client-dashboard__workout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .client-dashboard__workout button {
+    width: 100%;
+  }
+
+  .client-dashboard__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .client-feature {
+    grid-template-columns: 35px 1fr;
+    gap: 12px;
+  }
+}
