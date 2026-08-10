@@ -1,6 +1,7 @@
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import Features from '../components/Features'
+import HowItWorks from '../components/HowItWorks'
 
 function LandingPage() {
   return (
@@ -10,6 +11,7 @@ function LandingPage() {
       <main>
         <Hero />
         <Features />
+        <HowItWorks />
       </main>
     </>
   )
