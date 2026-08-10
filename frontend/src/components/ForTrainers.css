@@ -1,0 +1,350 @@
+.for-trainers {
+  padding: 160px 32px;
+  background-color: var(--color-black);
+}
+
+.for-trainers__container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.for-trainers__header {
+  max-width: 760px;
+  margin-bottom: 90px;
+}
+
+.for-trainers__eyebrow {
+  margin: 0 0 20px;
+
+  color: var(--color-green-light);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.for-trainers__title {
+  margin: 0;
+
+  font-size: clamp(48px, 6vw, 82px);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.for-trainers__title span {
+  color: var(--color-green-light);
+}
+
+.for-trainers__description {
+  max-width: 620px;
+  margin: 30px 0 0;
+
+  color: var(--color-light-gray);
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.for-trainers__layout {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 80px;
+  align-items: center;
+}
+
+/* Features */
+
+.for-trainers__features {
+  display: flex;
+  flex-direction: column;
+}
+
+.trainer-feature {
+  display: grid;
+  grid-template-columns: 45px 1fr;
+  gap: 20px;
+
+  padding: 28px 0;
+
+  border-top: 1px solid var(--color-gray);
+}
+
+.trainer-feature:last-child {
+  border-bottom: 1px solid var(--color-gray);
+}
+
+.trainer-feature__number {
+  color: var(--color-green-light);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.trainer-feature h3 {
+  margin: 0;
+
+  font-size: 22px;
+  letter-spacing: -0.03em;
+}
+
+.trainer-feature p {
+  max-width: 420px;
+  margin: 10px 0 0;
+
+  color: var(--color-light-gray);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+/* Dashboard */
+
+.trainer-dashboard {
+  padding: 24px;
+
+  border: 1px solid var(--color-gray);
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(36, 86, 63, 0.13),
+      rgba(10, 10, 10, 0.98) 50%
+    );
+
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.45);
+}
+
+.trainer-dashboard__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid var(--color-dark-gray);
+
+  font-size: 13px;
+}
+
+.trainer-dashboard__profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  color: var(--color-light-gray);
+  font-size: 11px;
+}
+
+.trainer-dashboard__status {
+  color: var(--color-green-light);
+  font-size: 8px;
+}
+
+.trainer-dashboard__content {
+  padding: 32px 12px 12px;
+}
+
+.trainer-dashboard__greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-bottom: 36px;
+}
+
+.trainer-dashboard__greeting span {
+  color: var(--color-light-gray);
+  font-size: 12px;
+}
+
+.trainer-dashboard__greeting h3 {
+  margin: 0;
+
+  font-size: 28px;
+  letter-spacing: -0.04em;
+}
+
+.trainer-dashboard__section-label {
+  margin-bottom: 12px;
+
+  color: var(--color-light-gray);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.trainer-dashboard__appointments {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-bottom: 24px;
+}
+
+.trainer-appointment {
+  display: grid;
+  grid-template-columns: 70px 1fr auto;
+  gap: 18px;
+  align-items: center;
+
+  padding: 16px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 10px;
+
+  background-color: rgba(255, 255, 255, 0.02);
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.trainer-appointment:hover {
+  border-color: var(--color-green-light);
+  background-color: rgba(36, 86, 63, 0.08);
+}
+
+.trainer-appointment__time {
+  color: var(--color-green-light);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.trainer-appointment__info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.trainer-appointment__info strong {
+  font-size: 13px;
+}
+
+.trainer-appointment__info span {
+  color: var(--color-light-gray);
+  font-size: 10px;
+}
+
+.trainer-appointment__arrow {
+  color: var(--color-light-gray);
+  font-size: 16px;
+}
+
+.trainer-dashboard__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  margin-bottom: 10px;
+}
+
+.trainer-dashboard__stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  padding: 18px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 10px;
+
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.trainer-dashboard__stats span,
+.trainer-dashboard__bottom span {
+  color: var(--color-light-gray);
+  font-size: 10px;
+}
+
+.trainer-dashboard__stats strong {
+  font-size: 25px;
+  letter-spacing: -0.04em;
+}
+
+.trainer-dashboard__stats small {
+  color: var(--color-green-light);
+  font-size: 10px;
+}
+
+.trainer-dashboard__bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.trainer-dashboard__bottom > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 18px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 10px;
+
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.trainer-dashboard__bottom strong {
+  font-size: 18px;
+}
+
+/* Tablet */
+
+@media (max-width: 1000px) {
+  .for-trainers {
+    padding: 120px 24px;
+  }
+
+  .for-trainers__layout {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+
+  .trainer-dashboard {
+    max-width: 750px;
+  }
+}
+
+/* Telefon */
+
+@media (max-width: 600px) {
+  .for-trainers {
+    padding: 90px 20px;
+  }
+
+  .for-trainers__header {
+    margin-bottom: 60px;
+  }
+
+  .for-trainers__description {
+    font-size: 16px;
+  }
+
+  .trainer-dashboard {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .trainer-dashboard__content {
+    padding: 24px 4px 4px;
+  }
+
+  .trainer-appointment {
+    grid-template-columns: 55px 1fr;
+    gap: 12px;
+  }
+
+  .trainer-appointment__arrow {
+    display: none;
+  }
+
+  .trainer-dashboard__stats,
+  .trainer-dashboard__bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .trainer-feature {
+    grid-template-columns: 35px 1fr;
+    gap: 12px;
+  }
+}
