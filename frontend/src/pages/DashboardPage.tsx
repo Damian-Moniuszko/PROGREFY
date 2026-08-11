@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import './DashboardPage.css'
-
-interface User {
-  id: number
-  email: string
-  firstName: string
-  lastName: string
-  role: 'CLIENT' | 'TRAINER'
-}
 
 interface Appointment {
   id: number
@@ -29,66 +22,56 @@ interface Appointment {
 function DashboardPage() {
   const navigate = useNavigate()
 
-  const [user, setUser] = useState<User | null>(null)
-  const [appointments, setAppointments] = useState<Appointment[]>([])
+  const {
+    user,
+    token,
+    logout,
+    loading: authLoading,
+  } = useAuth()
+
+  const [appointments, setAppointments] = useState<
+    Appointment[]
+  >([])
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    async function fetchDashboard() {
-      const token = localStorage.getItem('token')
+    if (authLoading) {
+      return
+    }
 
-      if (!token) {
-        navigate('/login')
-        return
-      }
+    if (!user || !token) {
+      navigate('/login')
+      return
+    }
 
+    async function fetchAppointments() {
       try {
-        const headers = {
-          Authorization: `Bearer ${token}`,
-        }
+        const response = await fetch(
+          'http://localhost:3000/api/me/appointments',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        )
 
-        const [meResponse, appointmentsResponse] =
-          await Promise.all([
-            fetch('http://localhost:3000/api/me', {
-              headers,
-            }),
-
-            fetch(
-              'http://localhost:3000/api/me/appointments',
-              {
-                headers,
-              },
-            ),
-          ])
-
-        if (
-          meResponse.status === 401 ||
-          appointmentsResponse.status === 401
-        ) {
-          localStorage.removeItem('token')
+        if (response.status === 401) {
+          logout()
           navigate('/login')
           return
         }
 
-        if (
-          !meResponse.ok ||
-          !appointmentsResponse.ok
-        ) {
+        if (!response.ok) {
           throw new Error(
-            'Nie udało się pobrać danych dashboardu.',
+            'Nie udało się pobrać rezerwacji.',
           )
         }
 
-        const meData = await meResponse.json()
-        const appointmentsData =
-          await appointmentsResponse.json()
+        const data = await response.json()
 
-        setUser(meData.user)
-        setAppointments(
-          appointmentsData.appointments,
-        )
+        setAppointments(data.appointments)
       } catch (error) {
         setError(
           error instanceof Error
@@ -100,11 +83,17 @@ function DashboardPage() {
       }
     }
 
-    fetchDashboard()
-  }, [navigate])
+    fetchAppointments()
+  }, [
+    authLoading,
+    user,
+    token,
+    logout,
+    navigate,
+  ])
 
   function handleLogout() {
-    localStorage.removeItem('token')
+    logout()
     navigate('/login')
   }
 
@@ -123,7 +112,7 @@ function DashboardPage() {
     }).format(new Date(dateString))
   }
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <main className="dashboard-page">
         <p>Ładowanie dashboardu...</p>
@@ -145,11 +134,10 @@ function DashboardPage() {
     return null
   }
 
-  const nextAppointment =
-    appointments.find(
-      (appointment) =>
-        new Date(appointment.startAt) > new Date(),
-    )
+  const nextAppointment = appointments.find(
+    (appointment) =>
+      new Date(appointment.startAt) > new Date(),
+  )
 
   return (
     <main className="dashboard-page">
@@ -220,8 +208,14 @@ function DashboardPage() {
                 </p>
 
                 <h3>
-                  {nextAppointment.trainer.user.firstName}{' '}
-                  {nextAppointment.trainer.user.lastName}
+                  {
+                    nextAppointment.trainer.user
+                      .firstName
+                  }{' '}
+                  {
+                    nextAppointment.trainer.user
+                      .lastName
+                  }
                 </h3>
 
                 <p>
@@ -237,6 +231,7 @@ function DashboardPage() {
 
               <div className="next-appointment__price">
                 <span>CENA</span>
+
                 <strong>
                   {nextAppointment.price} zł
                 </strong>
@@ -248,7 +243,9 @@ function DashboardPage() {
             </div>
           ) : (
             <div className="dashboard-empty">
-              <h3>Brak nadchodzących treningów</h3>
+              <h3>
+                Brak nadchodzących treningów
+              </h3>
 
               <p>
                 Znajdź trenera i zarezerwuj swój
@@ -303,12 +300,12 @@ function DashboardPage() {
 
                       <h3>
                         {
-                          appointment.trainer
-                            .user.firstName
+                          appointment.trainer.user
+                            .firstName
                         }{' '}
                         {
-                          appointment.trainer
-                            .user.lastName
+                          appointment.trainer.user
+                            .lastName
                         }
                       </h3>
                     </div>

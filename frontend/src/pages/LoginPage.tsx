@@ -1,10 +1,12 @@
 import { FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import './LoginPage.css'
 
 function LoginPage() {
+  const { login } = useAuth()
   const navigate = useNavigate()
-
+  
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -40,7 +42,7 @@ function LoginPage() {
         )
       }
 
-      localStorage.setItem('token', data.token)
+      await login(data.token)
 
       navigate('/dashboard')
     } catch (error) {
