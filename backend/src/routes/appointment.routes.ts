@@ -7,6 +7,10 @@ interface CreateAppointmentBody {
   endAt: string
 }
 
+interface UpdateAppointmentStatusBody {
+  status: 'CONFIRMED' | 'CANCELLED'
+}
+
 export async function appointmentRoutes(app: FastifyInstance) {
   app.post<{ Body: CreateAppointmentBody }>(
     '/api/appointments',
@@ -283,5 +287,121 @@ export async function appointmentRoutes(app: FastifyInstance) {
         })
         }
     },
+    )
+
+    app.patch<{
+      Params: {
+        id: string
+      }
+      Body: UpdateAppointmentStatusBody
+    }>(
+      '/api/me/trainer-appointments/:id/status',
+      async (request, reply) => {
+        try {
+          const decoded = await request.jwtVerify<{
+            userId: number
+            role: 'CLIENT' | 'TRAINER'
+          }>()
+
+          if (decoded.role !== UserRole.TRAINER) {
+            return reply.status(403).send({
+              message:
+                'Only trainers can update appointment status',
+            })
+          }
+
+          const appointmentId = Number(
+            request.params.id,
+          )
+
+          if (
+            !Number.isInteger(appointmentId) ||
+            appointmentId <= 0
+          ) {
+            return reply.status(400).send({
+              message: 'Invalid appointment id',
+            })
+          }
+
+          const { status } = request.body
+
+          if (
+            status !== AppointmentStatus.CONFIRMED &&
+            status !== AppointmentStatus.CANCELLED
+          ) {
+            return reply.status(400).send({
+              message:
+                'Status must be CONFIRMED or CANCELLED',
+            })
+          }
+
+          const trainerProfile =
+            await app.prisma.trainerProfile.findUnique({
+              where: {
+                userId: decoded.userId,
+              },
+            })
+
+          if (!trainerProfile) {
+            return reply.status(404).send({
+              message: 'Trainer profile not found',
+            })
+          }
+
+          const appointment =
+            await app.prisma.appointment.findUnique({
+              where: {
+                id: appointmentId,
+              },
+            })
+
+          if (!appointment) {
+            return reply.status(404).send({
+              message: 'Appointment not found',
+            })
+          }
+
+          if (
+            appointment.trainerId !== trainerProfile.id
+          ) {
+            return reply.status(403).send({
+              message:
+                'You can only update your own appointments',
+            })
+          }
+
+          if (
+            appointment.status !==
+            AppointmentStatus.PENDING
+          ) {
+            return reply.status(400).send({
+              message:
+                'Only pending appointments can be updated',
+            })
+          }
+
+          const updatedAppointment =
+            await app.prisma.appointment.update({
+              where: {
+                id: appointment.id,
+              },
+              data: {
+                status,
+              },
+            })
+
+          return {
+            message:
+              'Appointment status updated successfully',
+            appointment: updatedAppointment,
+          }
+        } catch (error) {
+          request.log.error(error)
+
+          return reply.status(401).send({
+            message: 'Unauthorized',
+          })
+        }
+      },
     )
 }
