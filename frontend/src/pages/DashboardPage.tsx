@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import './DashboardPage.css'
+import { getAppointmentStatusLabel } from '../utils/appointmentStatus'
 
 interface Appointment {
   id: number
@@ -300,7 +301,9 @@ function DashboardPage() {
                 </strong>
 
                 <small>
-                  {nextAppointment.status}
+                  {getAppointmentStatusLabel(
+                    nextAppointment.status,
+                  )}
                 </small>
               </div>
             </div>
@@ -391,7 +394,9 @@ function DashboardPage() {
 
                     <div>
                       <span className="appointment-status">
-                        {appointment.status}
+                        {getAppointmentStatusLabel(
+                          appointment.status,
+                        )}
                       </span>
 
                       {(appointment.status ===

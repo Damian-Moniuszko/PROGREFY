@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { getAppointmentStatusLabel } from '../utils/appointmentStatus'
 import './TrainerDashboardPage.css'
 
 interface Appointment {
@@ -56,7 +57,7 @@ function TrainerDashboardPage() {
   >([])
 
   const [showAvailabilityForm, setShowAvailabilityForm] =
-  useState(false)
+    useState(false)
 
   const [availabilityDay, setAvailabilityDay] =
     useState('MONDAY')
@@ -74,7 +75,7 @@ function TrainerDashboardPage() {
   const [error, setError] = useState('')
 
   const [updatingAppointmentId, setUpdatingAppointmentId] =
-  useState<number | null>(null)
+    useState<number | null>(null)
 
   useEffect(() => {
     if (authLoading) {
@@ -92,79 +93,81 @@ function TrainerDashboardPage() {
     }
 
     async function fetchAppointments() {
-        try {
-            const [appointmentsResponse, availabilityResponse] =
-            await Promise.all([
-                fetch(
-                'http://localhost:3000/api/me/trainer-appointments',
-                {
-                    headers: {
-                    Authorization: `Bearer ${token}`,
-                    },
-                },
-                ),
+      try {
+        const [
+          appointmentsResponse,
+          availabilityResponse,
+        ] = await Promise.all([
+          fetch(
+            'http://localhost:3000/api/me/trainer-appointments',
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          ),
 
-                fetch(
-                'http://localhost:3000/api/me/availability',
-                {
-                    headers: {
-                    Authorization: `Bearer ${token}`,
-                    },
-                },
-                ),
-            ])
+          fetch(
+            'http://localhost:3000/api/me/availability',
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          ),
+        ])
 
-            if (
-            appointmentsResponse.status === 401 ||
-            availabilityResponse.status === 401
-            ) {
-            logout()
-            navigate('/login')
-            return
-            }
-
-            if (
-            appointmentsResponse.status === 403 ||
-            availabilityResponse.status === 403
-            ) {
-            navigate('/dashboard')
-            return
-            }
-
-            if (!appointmentsResponse.ok) {
-            throw new Error(
-                'Nie udało się pobrać rezerwacji.',
-            )
-            }
-
-            if (!availabilityResponse.ok) {
-            throw new Error(
-                'Nie udało się pobrać dostępności.',
-            )
-            }
-
-            const appointmentsData =
-            await appointmentsResponse.json()
-
-            const availabilityData =
-            await availabilityResponse.json()
-
-            setAppointments(
-            appointmentsData.appointments,
-            )
-
-            setAvailability(
-            availabilityData.availability,
-            )
-        } catch (error) {
-            setError(
-            error instanceof Error
-                ? error.message
-                : 'Wystąpił błąd.',
-            )
-        } finally {
-            setLoading(false)
+        if (
+          appointmentsResponse.status === 401 ||
+          availabilityResponse.status === 401
+        ) {
+          logout()
+          navigate('/login')
+          return
         }
+
+        if (
+          appointmentsResponse.status === 403 ||
+          availabilityResponse.status === 403
+        ) {
+          navigate('/dashboard')
+          return
+        }
+
+        if (!appointmentsResponse.ok) {
+          throw new Error(
+            'Nie udało się pobrać rezerwacji.',
+          )
+        }
+
+        if (!availabilityResponse.ok) {
+          throw new Error(
+            'Nie udało się pobrać dostępności.',
+          )
+        }
+
+        const appointmentsData =
+          await appointmentsResponse.json()
+
+        const availabilityData =
+          await availabilityResponse.json()
+
+        setAppointments(
+          appointmentsData.appointments,
+        )
+
+        setAvailability(
+          availabilityData.availability,
+        )
+      } catch (error) {
+        setError(
+          error instanceof Error
+            ? error.message
+            : 'Wystąpił błąd.',
+        )
+      } finally {
+        setLoading(false)
+      }
     }
 
     fetchAppointments()
@@ -308,7 +311,10 @@ function TrainerDashboardPage() {
 
   async function updateAppointmentStatus(
     appointmentId: number,
-    status: 'CONFIRMED' | 'CANCELLED' | 'COMPLETED',
+    status:
+      | 'CONFIRMED'
+      | 'CANCELLED'
+      | 'COMPLETED',
   ) {
     setUpdatingAppointmentId(appointmentId)
 
@@ -393,6 +399,7 @@ function TrainerDashboardPage() {
         <section className="trainer-dashboard__stats">
           <div className="trainer-stat">
             <span>REZERWACJE</span>
+
             <strong>
               {appointments.length}
             </strong>
@@ -400,11 +407,13 @@ function TrainerDashboardPage() {
 
           <div className="trainer-stat">
             <span>KLIENCI</span>
+
             <strong>{uniqueClients}</strong>
           </div>
 
           <div className="trainer-stat">
             <span>PRZYCHÓD</span>
+
             <strong>
               {totalRevenue.toFixed(2)} zł
             </strong>
@@ -463,7 +472,9 @@ function TrainerDashboardPage() {
                 </strong>
 
                 <small>
-                  {nextAppointment.status}
+                  {getAppointmentStatusLabel(
+                    nextAppointment.status,
+                  )}
                 </small>
               </div>
             </div>
@@ -538,15 +549,19 @@ function TrainerDashboardPage() {
                     </div>
 
                     <span className="trainer-appointment-status">
-                      {appointment.status}
+                      {getAppointmentStatusLabel(
+                        appointment.status,
+                      )}
                     </span>
 
-                    {appointment.status === 'PENDING' && (
+                    {appointment.status ===
+                      'PENDING' && (
                       <div className="trainer-appointment-actions">
                         <button
                           className="trainer-appointment-confirm"
                           disabled={
-                            updatingAppointmentId === appointment.id
+                            updatingAppointmentId ===
+                            appointment.id
                           }
                           onClick={() =>
                             updateAppointmentStatus(
@@ -555,7 +570,8 @@ function TrainerDashboardPage() {
                             )
                           }
                         >
-                          {updatingAppointmentId === appointment.id
+                          {updatingAppointmentId ===
+                          appointment.id
                             ? '...'
                             : '✓ Akceptuj'}
                         </button>
@@ -563,7 +579,8 @@ function TrainerDashboardPage() {
                         <button
                           className="trainer-appointment-cancel"
                           disabled={
-                            updatingAppointmentId === appointment.id
+                            updatingAppointmentId ===
+                            appointment.id
                           }
                           onClick={() =>
                             updateAppointmentStatus(
@@ -577,13 +594,17 @@ function TrainerDashboardPage() {
                       </div>
                     )}
 
-                    {appointment.status === 'CONFIRMED' &&
-                      new Date(appointment.endAt) <= new Date() && (
+                    {appointment.status ===
+                      'CONFIRMED' &&
+                      new Date(
+                        appointment.endAt,
+                      ) <= new Date() && (
                         <div className="trainer-appointment-actions">
                           <button
                             className="trainer-appointment-complete"
                             disabled={
-                              updatingAppointmentId === appointment.id
+                              updatingAppointmentId ===
+                              appointment.id
                             }
                             onClick={() =>
                               updateAppointmentStatus(
@@ -592,7 +613,8 @@ function TrainerDashboardPage() {
                               )
                             }
                           >
-                            {updatingAppointmentId === appointment.id
+                            {updatingAppointmentId ===
+                            appointment.id
                               ? 'Zapisywanie...'
                               : '✓ Oznacz jako zakończony'}
                           </button>
@@ -613,162 +635,200 @@ function TrainerDashboardPage() {
         </section>
 
         <section className="trainer-dashboard-section">
-        <div className="trainer-dashboard-section__header">
+          <div className="trainer-dashboard-section__header">
             <div>
-            <p className="trainer-dashboard__eyebrow">
+              <p className="trainer-dashboard__eyebrow">
                 DOSTĘPNOŚĆ
-            </p>
+              </p>
 
-            <h2>Moja dostępność</h2>
-            <button
-              className="trainer-availability-add"
-              onClick={() =>
-                setShowAvailabilityForm(
-                  (current) => !current,
-                )
-              }
-            >
-  {showAvailabilityForm
-    ? 'Anuluj'
-    : '+ Dodaj dostępność'}
-</button>
-            </div>
-        </div>
+              <h2>Moja dostępność</h2>
 
-        {showAvailabilityForm && (
-          <div className="trainer-availability-form">
-            <label>
-              Dzień tygodnia
-
-              <select
-                value={availabilityDay}
-                onChange={(event) =>
-                  setAvailabilityDay(event.target.value)
+              <button
+                className="trainer-availability-add"
+                onClick={() =>
+                  setShowAvailabilityForm(
+                    (current) => !current,
+                  )
                 }
               >
-                <option value="MONDAY">Poniedziałek</option>
-                <option value="TUESDAY">Wtorek</option>
-                <option value="WEDNESDAY">Środa</option>
-                <option value="THURSDAY">Czwartek</option>
-                <option value="FRIDAY">Piątek</option>
-                <option value="SATURDAY">Sobota</option>
-                <option value="SUNDAY">Niedziela</option>
-              </select>
-            </label>
-
-            <label>
-              Od
-
-              <input
-                type="time"
-                value={availabilityStart}
-                onChange={(event) =>
-                  setAvailabilityStart(event.target.value)
-                }
-              />
-            </label>
-
-            <label>
-              Do
-
-              <input
-                type="time"
-                value={availabilityEnd}
-                onChange={(event) =>
-                  setAvailabilityEnd(event.target.value)
-                }
-              />
-            </label>
-
-            <button
-              className="trainer-availability-submit"
-              onClick={handleAddAvailability}
-              disabled={availabilitySaving}
-            >
-              {availabilitySaving
-                ? 'Zapisywanie...'
-                : 'Dodaj'}
-            </button>
+                {showAvailabilityForm
+                  ? 'Anuluj'
+                  : '+ Dodaj dostępność'}
+              </button>
+            </div>
           </div>
-        )}
 
-        {availability.length > 0 ? (
-            <div className="trainer-availability-list">
-            {availability.map((item) => (
-                <article
-                className="trainer-availability-card"
-                key={item.id}
+          {showAvailabilityForm && (
+            <div className="trainer-availability-form">
+              <label>
+                Dzień tygodnia
+
+                <select
+                  value={availabilityDay}
+                  onChange={(event) =>
+                    setAvailabilityDay(
+                      event.target.value,
+                    )
+                  }
                 >
-                <div>
+                  <option value="MONDAY">
+                    Poniedziałek
+                  </option>
+
+                  <option value="TUESDAY">
+                    Wtorek
+                  </option>
+
+                  <option value="WEDNESDAY">
+                    Środa
+                  </option>
+
+                  <option value="THURSDAY">
+                    Czwartek
+                  </option>
+
+                  <option value="FRIDAY">
+                    Piątek
+                  </option>
+
+                  <option value="SATURDAY">
+                    Sobota
+                  </option>
+
+                  <option value="SUNDAY">
+                    Niedziela
+                  </option>
+                </select>
+              </label>
+
+              <label>
+                Od
+
+                <input
+                  type="time"
+                  value={availabilityStart}
+                  onChange={(event) =>
+                    setAvailabilityStart(
+                      event.target.value,
+                    )
+                  }
+                />
+              </label>
+
+              <label>
+                Do
+
+                <input
+                  type="time"
+                  value={availabilityEnd}
+                  onChange={(event) =>
+                    setAvailabilityEnd(
+                      event.target.value,
+                    )
+                  }
+                />
+              </label>
+
+              <button
+                className="trainer-availability-submit"
+                onClick={handleAddAvailability}
+                disabled={availabilitySaving}
+              >
+                {availabilitySaving
+                  ? 'Zapisywanie...'
+                  : 'Dodaj'}
+              </button>
+            </div>
+          )}
+
+          {availability.length > 0 ? (
+            <div className="trainer-availability-list">
+              {availability.map((item) => (
+                <article
+                  className="trainer-availability-card"
+                  key={item.id}
+                >
+                  <div>
                     <p className="trainer-availability-card__day">
-                    {dayNames[item.dayOfWeek] ??
+                      {dayNames[item.dayOfWeek] ??
                         item.dayOfWeek}
                     </p>
 
                     <p className="trainer-availability-card__time">
-                    {item.startTime} – {item.endTime}
+                      {item.startTime} –{' '}
+                      {item.endTime}
                     </p>
-                </div>
+                  </div>
 
-                <button
+                  <button
                     className="trainer-availability-card__delete"
                     onClick={async () => {
-                        try {
-                            const response = await fetch(
+                      try {
+                        const response =
+                          await fetch(
                             `http://localhost:3000/api/me/availability/${item.id}`,
                             {
-                                method: 'DELETE',
-                                headers: {
+                              method: 'DELETE',
+                              headers: {
                                 Authorization: `Bearer ${token}`,
-                                },
+                              },
                             },
-                            )
+                          )
 
-                            const data = await response.json()
+                        const data =
+                          await response.json()
 
-                            if (response.status === 401) {
-                            logout()
-                            navigate('/login')
-                            return
-                            }
-
-                            if (!response.ok) {
-                            throw new Error(
-                                data.message ||
-                                'Nie udało się usunąć dostępności.',
-                            )
-                            }
-
-                            setAvailability((current) =>
-                            current.filter(
-                                (availabilityItem) =>
-                                availabilityItem.id !== item.id,
-                            ),
-                            )
-                        } catch (error) {
-                            alert(
-                            error instanceof Error
-                                ? error.message
-                                : 'Nie udało się usunąć dostępności.',
-                            )
+                        if (
+                          response.status === 401
+                        ) {
+                          logout()
+                          navigate('/login')
+                          return
                         }
-                    }}
-                >
-                    Usuń
-                </button>
-                </article>
-            ))}
-            </div>
-        ) : (
-            <div className="trainer-dashboard-empty">
-            <h3>Brak ustawionej dostępności</h3>
 
-            <p>
-                Dodaj godziny, w których klienci mogą
-                rezerwować treningi.
-            </p>
+                        if (!response.ok) {
+                          throw new Error(
+                            data.message ||
+                              'Nie udało się usunąć dostępności.',
+                          )
+                        }
+
+                        setAvailability(
+                          (current) =>
+                            current.filter(
+                              (
+                                availabilityItem,
+                              ) =>
+                                availabilityItem.id !==
+                                item.id,
+                            ),
+                        )
+                      } catch (error) {
+                        alert(
+                          error instanceof Error
+                            ? error.message
+                            : 'Nie udało się usunąć dostępności.',
+                        )
+                      }
+                    }}
+                  >
+                    Usuń
+                  </button>
+                </article>
+              ))}
             </div>
-        )}
+          ) : (
+            <div className="trainer-dashboard-empty">
+              <h3>
+                Brak ustawionej dostępności
+              </h3>
+
+              <p>
+                Dodaj godziny, w których klienci
+                mogą rezerwować treningi.
+              </p>
+            </div>
+          )}
         </section>
       </div>
     </main>
