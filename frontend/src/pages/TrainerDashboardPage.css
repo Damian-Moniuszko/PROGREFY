@@ -301,3 +301,153 @@
     gap: 14px;
   }
 }
+
+.trainer-availability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.trainer-availability-card {
+  padding: 20px 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 12px;
+
+  background: #111;
+}
+
+.trainer-availability-card__day {
+  margin-bottom: 6px;
+
+  color: var(--color-white);
+
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.trainer-availability-card__time {
+  color: var(--color-light-gray);
+
+  font-size: 14px;
+}
+
+.trainer-availability-card__delete {
+  padding: 8px 14px;
+
+  border: 1px solid #5a3030;
+  border-radius: 7px;
+
+  color: #ff8f8f;
+  background: transparent;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.trainer-availability-card__delete:hover {
+  border-color: #8a4444;
+  background: rgba(138, 68, 68, 0.12);
+}
+
+@media (max-width: 600px) {
+  .trainer-availability-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .trainer-availability-card__delete {
+    width: 100%;
+  }
+}
+
+.trainer-availability-add {
+  margin-top: 18px;
+
+  padding: 10px 16px;
+
+  border: 1px solid var(--color-green);
+  border-radius: 8px;
+
+  color: var(--color-green-light);
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.trainer-availability-add:hover {
+  background: rgba(31, 107, 72, 0.12);
+}
+
+.trainer-availability-form {
+  margin-bottom: 20px;
+  padding: 24px;
+
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr auto;
+  align-items: end;
+
+  gap: 16px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 14px;
+
+  background: #111;
+}
+
+.trainer-availability-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  color: var(--color-light-gray);
+
+  font-size: 12px;
+}
+
+.trainer-availability-form select,
+.trainer-availability-form input {
+  min-height: 42px;
+  padding: 0 12px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 8px;
+
+  color: var(--color-white);
+  background: #181818;
+}
+
+.trainer-availability-submit {
+  min-height: 42px;
+  padding: 0 18px;
+
+  border: 0;
+  border-radius: 8px;
+
+  color: var(--color-white);
+  background: var(--color-green);
+
+  cursor: pointer;
+}
+
+.trainer-availability-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 800px) {
+  .trainer-availability-form {
+    grid-template-columns: 1fr;
+  }
+}
