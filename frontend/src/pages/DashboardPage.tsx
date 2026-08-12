@@ -36,6 +36,9 @@ function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const [cancellingAppointmentId, setCancellingAppointmentId] =
+    useState<number | null>(null)
+
   useEffect(() => {
     if (authLoading) {
       return
@@ -91,6 +94,66 @@ function DashboardPage() {
     logout,
     navigate,
   ])
+
+  async function cancelAppointment(
+    appointmentId: number,
+  ) {
+    const confirmed = window.confirm(
+      'Czy na pewno chcesz anulować tę rezerwację?',
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    setCancellingAppointmentId(appointmentId)
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/me/appointments/${appointmentId}/cancel`,
+        {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      const data = await response.json()
+
+      if (response.status === 401) {
+        logout()
+        navigate('/login')
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            'Nie udało się anulować rezerwacji.',
+        )
+      }
+
+      setAppointments((current) =>
+        current.map((appointment) =>
+          appointment.id === appointmentId
+            ? {
+                ...appointment,
+                status: data.appointment.status,
+              }
+            : appointment,
+        ),
+      )
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'Nie udało się anulować rezerwacji.',
+      )
+    } finally {
+      setCancellingAppointmentId(null)
+    }
+  }
 
   function handleLogout() {
     logout()
@@ -330,6 +393,29 @@ function DashboardPage() {
                       <span className="appointment-status">
                         {appointment.status}
                       </span>
+
+                      {(appointment.status ===
+                        'PENDING' ||
+                        appointment.status ===
+                          'CONFIRMED') && (
+                        <button
+                          className="appointment-cancel"
+                          disabled={
+                            cancellingAppointmentId ===
+                            appointment.id
+                          }
+                          onClick={() =>
+                            cancelAppointment(
+                              appointment.id,
+                            )
+                          }
+                        >
+                          {cancellingAppointmentId ===
+                          appointment.id
+                            ? 'Anulowanie...'
+                            : 'Anuluj rezerwację'}
+                        </button>
+                      )}
                     </div>
                   </article>
                 ),
