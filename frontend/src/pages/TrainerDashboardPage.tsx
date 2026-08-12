@@ -10,6 +10,14 @@ interface Appointment {
   endAt: string
   price: string
   status: string
+
+  payment: {
+    id: number
+    amount: string
+    status: string
+    provider: string
+  } | null
+
   client: {
     id: number
     user: {
@@ -26,6 +34,14 @@ interface Availability {
   dayOfWeek: string
   startTime: string
   endTime: string
+}
+
+interface TrainerProfile {
+  bio: string
+  specialization: string
+  price: string
+  durationMinutes: string
+  location: string
 }
 
 const dayNames: Record<string, string> = {
@@ -56,6 +72,15 @@ function TrainerDashboardPage() {
     Availability[]
   >([])
 
+  const [trainerProfile, setTrainerProfile] =
+    useState<TrainerProfile>({
+      bio: '',
+      specialization: '',
+      price: '',
+      durationMinutes: '',
+      location: '',
+    })
+
   const [showAvailabilityForm, setShowAvailabilityForm] =
     useState(false)
 
@@ -71,11 +96,16 @@ function TrainerDashboardPage() {
   const [availabilitySaving, setAvailabilitySaving] =
     useState(false)
 
+  const [profileSaving, setProfileSaving] =
+    useState(false)
+
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const [updatingAppointmentId, setUpdatingAppointmentId] =
-    useState<number | null>(null)
+  const [
+    updatingAppointmentId,
+    setUpdatingAppointmentId,
+  ] = useState<number | null>(null)
 
   useEffect(() => {
     if (authLoading) {
@@ -92,11 +122,12 @@ function TrainerDashboardPage() {
       return
     }
 
-    async function fetchAppointments() {
+    async function fetchDashboardData() {
       try {
         const [
           appointmentsResponse,
           availabilityResponse,
+          profileResponse,
         ] = await Promise.all([
           fetch(
             'http://localhost:3000/api/me/trainer-appointments',
@@ -115,11 +146,21 @@ function TrainerDashboardPage() {
               },
             },
           ),
+
+          fetch(
+            'http://localhost:3000/api/me/trainer-profile',
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          ),
         ])
 
         if (
           appointmentsResponse.status === 401 ||
-          availabilityResponse.status === 401
+          availabilityResponse.status === 401 ||
+          profileResponse.status === 401
         ) {
           logout()
           navigate('/login')
@@ -128,7 +169,8 @@ function TrainerDashboardPage() {
 
         if (
           appointmentsResponse.status === 403 ||
-          availabilityResponse.status === 403
+          availabilityResponse.status === 403 ||
+          profileResponse.status === 403
         ) {
           navigate('/dashboard')
           return
@@ -146,11 +188,20 @@ function TrainerDashboardPage() {
           )
         }
 
+        if (!profileResponse.ok) {
+          throw new Error(
+            'Nie udało się pobrać profilu trenera.',
+          )
+        }
+
         const appointmentsData =
           await appointmentsResponse.json()
 
         const availabilityData =
           await availabilityResponse.json()
+
+        const profileData =
+          await profileResponse.json()
 
         setAppointments(
           appointmentsData.appointments,
@@ -159,6 +210,25 @@ function TrainerDashboardPage() {
         setAvailability(
           availabilityData.availability,
         )
+
+        const profile = profileData.profile
+
+        setTrainerProfile({
+          bio: profile.bio ?? '',
+          specialization:
+            profile.specialization ?? '',
+          price:
+            profile.price !== null &&
+            profile.price !== undefined
+              ? String(profile.price)
+              : '',
+          durationMinutes:
+            profile.durationMinutes !== null &&
+            profile.durationMinutes !== undefined
+              ? String(profile.durationMinutes)
+              : '',
+          location: profile.location ?? '',
+        })
       } catch (error) {
         setError(
           error instanceof Error
@@ -170,7 +240,7 @@ function TrainerDashboardPage() {
       }
     }
 
-    fetchAppointments()
+    fetchDashboardData()
   }, [
     authLoading,
     user,
@@ -199,49 +269,109 @@ function TrainerDashboardPage() {
     }).format(new Date(dateString))
   }
 
-  if (authLoading || loading) {
-    return (
-      <main className="trainer-dashboard-page">
-        <p>Ładowanie dashboardu...</p>
-      </main>
-    )
+  async function handleSaveProfile() {
+    if (
+      trainerProfile.price !== '' &&
+      Number(trainerProfile.price) < 0
+    ) {
+      alert('Cena nie może być ujemna.')
+      return
+    }
+
+    if (
+      trainerProfile.durationMinutes !== '' &&
+      Number(trainerProfile.durationMinutes) <= 0
+    ) {
+      alert('Czas treningu musi być większy od 0.')
+      return
+    }
+
+    setProfileSaving(true)
+
+    try {
+      const response = await fetch(
+        'http://localhost:3000/api/me/trainer-profile',
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            bio:
+              trainerProfile.bio.trim() ||
+              undefined,
+
+            specialization:
+              trainerProfile.specialization.trim() ||
+              undefined,
+
+            price:
+              trainerProfile.price !== ''
+                ? Number(trainerProfile.price)
+                : undefined,
+
+            durationMinutes:
+              trainerProfile.durationMinutes !== ''
+                ? Number(
+                    trainerProfile.durationMinutes,
+                  )
+                : undefined,
+
+            location:
+              trainerProfile.location.trim() ||
+              undefined,
+          }),
+        },
+      )
+
+      const data = await response.json()
+
+      if (response.status === 401) {
+        logout()
+        navigate('/login')
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            'Nie udało się zapisać profilu.',
+        )
+      }
+
+      if (data.profile) {
+        setTrainerProfile({
+          bio: data.profile.bio ?? '',
+          specialization:
+            data.profile.specialization ?? '',
+          price:
+            data.profile.price !== null &&
+            data.profile.price !== undefined
+              ? String(data.profile.price)
+              : '',
+          durationMinutes:
+            data.profile.durationMinutes !== null &&
+            data.profile.durationMinutes !== undefined
+              ? String(
+                  data.profile.durationMinutes,
+                )
+              : '',
+          location: data.profile.location ?? '',
+        })
+      }
+
+      alert('Profil został zapisany.')
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'Nie udało się zapisać profilu.',
+      )
+    } finally {
+      setProfileSaving(false)
+    }
   }
-
-  if (error) {
-    return (
-      <main className="trainer-dashboard-page">
-        <div className="trainer-dashboard-error">
-          {error}
-        </div>
-      </main>
-    )
-  }
-
-  if (!user) {
-    return null
-  }
-
-  const upcomingAppointments =
-    appointments.filter(
-      (appointment) =>
-        appointment.status !== 'COMPLETED' &&
-        appointment.status !== 'CANCELLED',
-    )
-
-  const uniqueClients = new Set(
-    appointments.map(
-      (appointment) => appointment.client.id,
-    ),
-  ).size
-
-  const totalRevenue = appointments.reduce(
-    (total, appointment) =>
-      total + Number(appointment.price),
-    0,
-  )
-
-  const nextAppointment =
-    upcomingAppointments[0]
 
   async function handleAddAvailability() {
     if (!availabilityStart || !availabilityEnd) {
@@ -369,9 +499,119 @@ function TrainerDashboardPage() {
     }
   }
 
+  async function handleDeleteAvailability(
+    availabilityId: number,
+  ) {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/me/availability/${availabilityId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      const data = await response.json()
+
+      if (response.status === 401) {
+        logout()
+        navigate('/login')
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            'Nie udało się usunąć dostępności.',
+        )
+      }
+
+      setAvailability((current) =>
+        current.filter(
+          (item) => item.id !== availabilityId,
+        ),
+      )
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'Nie udało się usunąć dostępności.',
+      )
+    }
+  }
+
+  if (authLoading || loading) {
+    return (
+      <main className="trainer-dashboard-page">
+        <p>Ładowanie dashboardu...</p>
+      </main>
+    )
+  }
+
+  if (error) {
+    return (
+      <main className="trainer-dashboard-page">
+        <div className="trainer-dashboard-error">
+          {error}
+        </div>
+      </main>
+    )
+  }
+
+  if (!user) {
+    return null
+  }
+
+  const now = new Date()
+
+  const upcomingAppointments = appointments
+    .filter(
+      (appointment) =>
+        appointment.status !== 'COMPLETED' &&
+        appointment.status !== 'CANCELLED' &&
+        new Date(appointment.startAt) > now,
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.startAt).getTime() -
+        new Date(b.startAt).getTime(),
+    )
+
+  const displayedAppointments = [...appointments].sort(
+    (a, b) =>
+      new Date(b.startAt).getTime() -
+      new Date(a.startAt).getTime(),
+  )
+
+  const uniqueClients = new Set(
+    appointments.map(
+      (appointment) => appointment.client.id,
+    ),
+  ).size
+
+  const totalRevenue = appointments.reduce(
+    (total, appointment) => {
+      if (
+        appointment.status === 'CONFIRMED' ||
+        appointment.status === 'COMPLETED'
+      ) {
+        return total + Number(appointment.price)
+      }
+
+      return total
+    },
+    0,
+  )
+
+  const nextAppointment =
+    upcomingAppointments[0]
+
   return (
     <main className="trainer-dashboard-page">
       <div className="trainer-dashboard">
+
         <header className="trainer-dashboard__header">
           <div>
             <p className="trainer-dashboard__eyebrow">
@@ -417,6 +657,121 @@ function TrainerDashboardPage() {
             <strong>
               {totalRevenue.toFixed(2)} zł
             </strong>
+          </div>
+        </section>
+
+        <section className="trainer-dashboard-section">
+          <div className="trainer-dashboard-section__header">
+            <div>
+              <p className="trainer-dashboard__eyebrow">
+                PROFIL
+              </p>
+
+              <h2>Mój profil trenera</h2>
+            </div>
+          </div>
+
+          <div className="trainer-profile-form">
+            <label>
+              Opis
+
+              <textarea
+                value={trainerProfile.bio}
+                onChange={(event) =>
+                  setTrainerProfile((current) => ({
+                    ...current,
+                    bio: event.target.value,
+                  }))
+                }
+                placeholder="Napisz kilka zdań o sobie..."
+                rows={5}
+              />
+            </label>
+
+            <label>
+              Specjalizacja
+
+              <input
+                type="text"
+                value={
+                  trainerProfile.specialization
+                }
+                onChange={(event) =>
+                  setTrainerProfile((current) => ({
+                    ...current,
+                    specialization:
+                      event.target.value,
+                  }))
+                }
+                placeholder="np. Trening siłowy, redukcja"
+              />
+            </label>
+
+            <div className="trainer-profile-form__row">
+              <label>
+                Cena treningu
+
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={trainerProfile.price}
+                  onChange={(event) =>
+                    setTrainerProfile((current) => ({
+                      ...current,
+                      price: event.target.value,
+                    }))
+                  }
+                  placeholder="150"
+                />
+              </label>
+
+              <label>
+                Czas treningu
+
+                <input
+                  type="number"
+                  min="1"
+                  value={
+                    trainerProfile.durationMinutes
+                  }
+                  onChange={(event) =>
+                    setTrainerProfile((current) => ({
+                      ...current,
+                      durationMinutes:
+                        event.target.value,
+                    }))
+                  }
+                  placeholder="60"
+                />
+              </label>
+            </div>
+
+            <label>
+              Lokalizacja
+
+              <input
+                type="text"
+                value={trainerProfile.location}
+                onChange={(event) =>
+                  setTrainerProfile((current) => ({
+                    ...current,
+                    location: event.target.value,
+                  }))
+                }
+                placeholder="np. Białystok"
+              />
+            </label>
+
+            <button
+              className="trainer-profile-submit"
+              onClick={handleSaveProfile}
+              disabled={profileSaving}
+            >
+              {profileSaving
+                ? 'Zapisywanie...'
+                : 'Zapisz profil'}
+            </button>
           </div>
         </section>
 
@@ -476,6 +831,20 @@ function TrainerDashboardPage() {
                     nextAppointment.status,
                   )}
                 </small>
+
+                <small
+                  className={
+                    nextAppointment.payment?.status ===
+                    'PAID'
+                      ? 'trainer-next-payment--paid'
+                      : 'trainer-next-payment--pending'
+                  }
+                >
+                  {nextAppointment.payment?.status ===
+                  'PAID'
+                    ? '✓ Opłacone'
+                    : '💳 Nieopłacone'}
+                </small>
               </div>
             </div>
           ) : (
@@ -505,12 +874,12 @@ function TrainerDashboardPage() {
             </div>
           </div>
 
-          {upcomingAppointments.length > 0 ? (
+          {displayedAppointments.length > 0 ? (
             <div className="trainer-appointments-list">
-              {upcomingAppointments.map(
+              {displayedAppointments.map(
                 (appointment) => (
                   <article
-                    className="trainer-appointment-card"
+                    className={`trainer-appointment-card trainer-appointment-card--${appointment.status.toLowerCase()}`}
                     key={appointment.id}
                   >
                     <div>
@@ -548,11 +917,29 @@ function TrainerDashboardPage() {
                       </span>
                     </div>
 
-                    <span className="trainer-appointment-status">
-                      {getAppointmentStatusLabel(
-                        appointment.status,
-                      )}
-                    </span>
+                    <div className="trainer-appointment-statuses">
+                      <span
+                        className={`trainer-appointment-status trainer-appointment-status--${appointment.status.toLowerCase()}`}
+                      >
+                        {getAppointmentStatusLabel(
+                          appointment.status,
+                        )}
+                      </span>
+
+                      <span
+                        className={`trainer-payment-status ${
+                          appointment.payment?.status ===
+                          'PAID'
+                            ? 'trainer-payment-status--paid'
+                            : 'trainer-payment-status--pending'
+                        }`}
+                      >
+                        {appointment.payment?.status ===
+                        'PAID'
+                          ? '✓ Opłacone'
+                          : '💳 Nieopłacone'}
+                      </span>
+                    </div>
 
                     {appointment.status ===
                       'PENDING' && (
@@ -589,7 +976,10 @@ function TrainerDashboardPage() {
                             )
                           }
                         >
-                          ✕ Odrzuć
+                          {updatingAppointmentId ===
+                          appointment.id
+                            ? '...'
+                            : '✕ Odrzuć'}
                         </button>
                       </div>
                     )}
@@ -620,6 +1010,20 @@ function TrainerDashboardPage() {
                           </button>
                         </div>
                       )}
+
+                    {appointment.status ===
+                      'COMPLETED' && (
+                      <div className="trainer-appointment-history">
+                        Trening zakończony
+                      </div>
+                    )}
+
+                    {appointment.status ===
+                      'CANCELLED' && (
+                      <div className="trainer-appointment-history">
+                        Rezerwacja anulowana
+                      </div>
+                    )}
                   </article>
                 ),
               )}
@@ -762,55 +1166,11 @@ function TrainerDashboardPage() {
 
                   <button
                     className="trainer-availability-card__delete"
-                    onClick={async () => {
-                      try {
-                        const response =
-                          await fetch(
-                            `http://localhost:3000/api/me/availability/${item.id}`,
-                            {
-                              method: 'DELETE',
-                              headers: {
-                                Authorization: `Bearer ${token}`,
-                              },
-                            },
-                          )
-
-                        const data =
-                          await response.json()
-
-                        if (
-                          response.status === 401
-                        ) {
-                          logout()
-                          navigate('/login')
-                          return
-                        }
-
-                        if (!response.ok) {
-                          throw new Error(
-                            data.message ||
-                              'Nie udało się usunąć dostępności.',
-                          )
-                        }
-
-                        setAvailability(
-                          (current) =>
-                            current.filter(
-                              (
-                                availabilityItem,
-                              ) =>
-                                availabilityItem.id !==
-                                item.id,
-                            ),
-                        )
-                      } catch (error) {
-                        alert(
-                          error instanceof Error
-                            ? error.message
-                            : 'Nie udało się usunąć dostępności.',
-                        )
-                      }
-                    }}
+                    onClick={() =>
+                      handleDeleteAvailability(
+                        item.id,
+                      )
+                    }
                   >
                     Usuń
                   </button>
@@ -830,6 +1190,7 @@ function TrainerDashboardPage() {
             </div>
           )}
         </section>
+
       </div>
     </main>
   )

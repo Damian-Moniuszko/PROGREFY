@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import './DashboardPage.css'
 import { getAppointmentStatusLabel } from '../utils/appointmentStatus'
+import './DashboardPage.css'
 
 interface Appointment {
   id: number
@@ -10,6 +10,15 @@ interface Appointment {
   endAt: string
   price: string
   status: string
+
+  payment: {
+    id: number
+    amount: string
+    status: string
+    provider: string
+    providerPaymentId: string | null
+  } | null
+
   trainer: {
     id: number
     user: {
@@ -30,15 +39,21 @@ function DashboardPage() {
     loading: authLoading,
   } = useAuth()
 
-  const [appointments, setAppointments] = useState<
-    Appointment[]
-  >([])
+  const [appointments, setAppointments] =
+    useState<Appointment[]>([])
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const [cancellingAppointmentId, setCancellingAppointmentId] =
-    useState<number | null>(null)
+  const [
+    cancellingAppointmentId,
+    setCancellingAppointmentId,
+  ] = useState<number | null>(null)
+
+  const [
+    payingAppointmentId,
+    setPayingAppointmentId,
+  ] = useState<number | null>(null)
 
   useEffect(() => {
     if (authLoading) {
@@ -47,6 +62,11 @@ function DashboardPage() {
 
     if (!user || !token) {
       navigate('/login')
+      return
+    }
+
+    if (user.role !== 'CLIENT') {
+      navigate('/trainer/dashboard')
       return
     }
 
@@ -96,6 +116,75 @@ function DashboardPage() {
     navigate,
   ])
 
+  async function payForAppointment(
+    appointmentId: number,
+  ) {
+    if (!token) {
+      navigate('/login')
+      return
+    }
+
+    setPayingAppointmentId(appointmentId)
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/me/appointments/${appointmentId}/payment`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      const data = await response.json()
+
+      if (response.status === 401) {
+        logout()
+        navigate('/login')
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            'Nie udało się opłacić treningu.',
+        )
+      }
+
+      setAppointments((current) =>
+        current.map((appointment) =>
+          appointment.id === appointmentId
+            ? {
+                ...appointment,
+                payment: appointment.payment
+                  ? {
+                      ...appointment.payment,
+                      status:
+                        data.payment?.status ??
+                        'PAID',
+                      providerPaymentId:
+                        data.payment
+                          ?.providerPaymentId ??
+                        appointment.payment
+                          .providerPaymentId,
+                    }
+                  : appointment.payment,
+              }
+            : appointment,
+        ),
+      )
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'Nie udało się opłacić treningu.',
+      )
+    } finally {
+      setPayingAppointmentId(null)
+    }
+  }
+
   async function cancelAppointment(
     appointmentId: number,
   ) {
@@ -140,7 +229,17 @@ function DashboardPage() {
           appointment.id === appointmentId
             ? {
                 ...appointment,
-                status: data.appointment.status,
+                status:
+                  data.appointment.status,
+                payment:
+                  data.payment &&
+                  appointment.payment
+                    ? {
+                        ...appointment.payment,
+                        status:
+                          data.payment.status,
+                      }
+                    : appointment.payment,
               }
             : appointment,
         ),
@@ -176,6 +275,78 @@ function DashboardPage() {
     }).format(new Date(dateString))
   }
 
+  function getStatusClass(status: string) {
+    switch (status) {
+      case 'PENDING':
+        return 'appointment-status appointment-status--pending'
+
+      case 'CONFIRMED':
+        return 'appointment-status appointment-status--confirmed'
+
+      case 'CANCELLED':
+        return 'appointment-status appointment-status--cancelled'
+
+      case 'COMPLETED':
+        return 'appointment-status appointment-status--completed'
+
+      default:
+        return 'appointment-status'
+    }
+  }
+
+  function getPaymentStatusLabel(
+    status: string,
+  ) {
+    switch (status) {
+      case 'PENDING':
+        return 'Oczekuje na płatność'
+
+      case 'PAID':
+        return 'Opłacone'
+
+      case 'FAILED':
+        return 'Płatność nieudana'
+
+      case 'REFUNDED':
+        return 'Płatność zwrócona'
+
+      default:
+        return 'Brak informacji o płatności'
+    }
+  }
+
+  function getPaymentStatusClass(
+    status: string,
+  ) {
+    switch (status) {
+      case 'PENDING':
+        return 'appointment-payment appointment-payment--pending'
+
+      case 'PAID':
+        return 'appointment-payment appointment-payment--paid'
+
+      case 'FAILED':
+        return 'appointment-payment appointment-payment--failed'
+
+      case 'REFUNDED':
+        return 'appointment-payment appointment-payment--refunded'
+
+      default:
+        return 'appointment-payment'
+    }
+  }
+
+  function isUpcoming(
+    appointment: Appointment,
+  ) {
+    return (
+      new Date(appointment.startAt) >
+        new Date() &&
+      appointment.status !== 'CANCELLED' &&
+      appointment.status !== 'COMPLETED'
+    )
+  }
+
   if (authLoading || loading) {
     return (
       <main className="dashboard-page">
@@ -199,9 +370,18 @@ function DashboardPage() {
   }
 
   const nextAppointment = appointments.find(
-    (appointment) =>
-      new Date(appointment.startAt) > new Date(),
+    isUpcoming,
   )
+
+  const pendingCount = appointments.filter(
+    (appointment) =>
+      appointment.status === 'PENDING',
+  ).length
+
+  const confirmedCount = appointments.filter(
+    (appointment) =>
+      appointment.status === 'CONFIRMED',
+  ).length
 
   return (
     <main className="dashboard-page">
@@ -233,21 +413,22 @@ function DashboardPage() {
         <section className="dashboard__stats">
           <div className="dashboard-stat">
             <span>REZERWACJE</span>
-            <strong>{appointments.length}</strong>
-          </div>
 
-          <div className="dashboard-stat">
-            <span>ROLA</span>
             <strong>
-              {user.role === 'CLIENT'
-                ? 'Klient'
-                : 'Trener'}
+              {appointments.length}
             </strong>
           </div>
 
           <div className="dashboard-stat">
-            <span>EMAIL</span>
-            <strong>{user.email}</strong>
+            <span>OCZEKUJĄCE</span>
+
+            <strong>{pendingCount}</strong>
+          </div>
+
+          <div className="dashboard-stat">
+            <span>POTWIERDZONE</span>
+
+            <strong>{confirmedCount}</strong>
           </div>
         </section>
 
@@ -258,12 +439,16 @@ function DashboardPage() {
                 NAJBLIŻSZY TRENING
               </p>
 
-              <h2>Twój najbliższy trening</h2>
+              <h2>
+                Twój najbliższy trening
+              </h2>
             </div>
           </div>
 
           {nextAppointment ? (
-            <div className="next-appointment">
+            <div
+              className={`next-appointment next-appointment--${nextAppointment.status.toLowerCase()}`}
+            >
               <div>
                 <p className="next-appointment__date">
                   {formatDate(
@@ -300,11 +485,51 @@ function DashboardPage() {
                   {nextAppointment.price} zł
                 </strong>
 
-                <small>
+                <span
+                  className={getStatusClass(
+                    nextAppointment.status,
+                  )}
+                >
                   {getAppointmentStatusLabel(
                     nextAppointment.status,
                   )}
-                </small>
+                </span>
+
+                {nextAppointment.payment && (
+                  <span
+                    className={getPaymentStatusClass(
+                      nextAppointment.payment
+                        .status,
+                    )}
+                  >
+                    💳{' '}
+                    {getPaymentStatusLabel(
+                      nextAppointment.payment
+                        .status,
+                    )}
+                  </span>
+                )}
+
+                {nextAppointment.payment
+                  ?.status === 'PENDING' && (
+                  <button
+                    className="appointment-pay"
+                    disabled={
+                      payingAppointmentId ===
+                      nextAppointment.id
+                    }
+                    onClick={() =>
+                      payForAppointment(
+                        nextAppointment.id,
+                      )
+                    }
+                  >
+                    {payingAppointmentId ===
+                    nextAppointment.id
+                      ? 'Płacenie...'
+                      : '💳 Zapłać'}
+                  </button>
+                )}
               </div>
             </div>
           ) : (
@@ -354,10 +579,10 @@ function DashboardPage() {
               {appointments.map(
                 (appointment) => (
                   <article
-                    className="appointment-card"
+                    className={`appointment-card appointment-card--${appointment.status.toLowerCase()}`}
                     key={appointment.id}
                   >
-                    <div>
+                    <div className="appointment-card__main">
                       <p>
                         {formatDate(
                           appointment.startAt,
@@ -376,7 +601,7 @@ function DashboardPage() {
                       </h3>
                     </div>
 
-                    <div>
+                    <div className="appointment-card__time">
                       <p>
                         {formatTime(
                           appointment.startAt,
@@ -392,12 +617,56 @@ function DashboardPage() {
                       </span>
                     </div>
 
-                    <div>
-                      <span className="appointment-status">
+                    <div className="appointment-card__status">
+                      <span
+                        className={getStatusClass(
+                          appointment.status,
+                        )}
+                      >
                         {getAppointmentStatusLabel(
                           appointment.status,
                         )}
                       </span>
+
+                      {appointment.payment && (
+                        <span
+                          className={getPaymentStatusClass(
+                            appointment.payment
+                              .status,
+                          )}
+                        >
+                          💳{' '}
+                          {getPaymentStatusLabel(
+                            appointment.payment
+                              .status,
+                          )}
+                        </span>
+                      )}
+
+                      {appointment.payment
+                        ?.status === 'PENDING' &&
+                        appointment.status !==
+                          'CANCELLED' &&
+                        appointment.status !==
+                          'COMPLETED' && (
+                          <button
+                            className="appointment-pay"
+                            disabled={
+                              payingAppointmentId ===
+                              appointment.id
+                            }
+                            onClick={() =>
+                              payForAppointment(
+                                appointment.id,
+                              )
+                            }
+                          >
+                            {payingAppointmentId ===
+                            appointment.id
+                              ? 'Płacenie...'
+                              : '💳 Zapłać'}
+                          </button>
+                        )}
 
                       {(appointment.status ===
                         'PENDING' ||

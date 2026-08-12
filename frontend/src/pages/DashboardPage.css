@@ -363,3 +363,145 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* =========================
+   PAYMENT
+========================= */
+
+.appointment-card__status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.appointment-payment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--color-light-gray);
+
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.appointment-payment--pending {
+  color: #e6b84a;
+}
+
+.appointment-payment--paid {
+  color: var(--color-green-light);
+}
+
+.appointment-payment--failed {
+  color: #e98a8a;
+}
+
+.appointment-payment--refunded {
+  color: #9b9b9b;
+}
+
+.appointment-pay {
+  min-width: 110px;
+  padding: 9px 16px;
+
+  border: 1px solid var(--color-green);
+  border-radius: 8px;
+
+  color: var(--color-white);
+  background: var(--color-green);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.appointment-pay:hover {
+  background: var(--color-green-light);
+  border-color: var(--color-green-light);
+
+  transform: translateY(-1px);
+}
+
+.appointment-pay:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =========================
+   CANCEL BUTTON
+========================= */
+
+.appointment-cancel {
+  padding: 9px 16px;
+
+  border: 1px solid #5a3030;
+  border-radius: 8px;
+
+  color: #ff8f8f;
+  background: transparent;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.appointment-cancel:hover {
+  border-color: #8a4444;
+  background: rgba(120, 40, 40, 0.12);
+}
+
+.appointment-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================
+   PAYMENT + STATUS LAYOUT
+========================= */
+
+.appointment-card__status
+  .appointment-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;
+}
+
+.appointment-card__status
+  .appointment-payment {
+  white-space: nowrap;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+  .appointment-card__status {
+    align-items: flex-start;
+  }
+
+  .appointment-pay,
+  .appointment-cancel {
+    width: 100%;
+  }
+
+  .appointment-payment {
+    white-space: normal;
+  }
+}

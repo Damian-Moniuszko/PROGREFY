@@ -4,17 +4,30 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import './LoginPage.css'
 
+interface LoginResponse {
+  token: string
+  user: {
+    id: number
+    email: string
+    firstName: string
+    lastName: string
+    role: 'CLIENT' | 'TRAINER'
+  }
+}
+
 function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
-  
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>,
+  ) {
     event.preventDefault()
 
     setLoading(true)
@@ -35,17 +48,24 @@ function LoginPage() {
         },
       )
 
-      const data = await response.json()
+      const data: LoginResponse & {
+        message?: string
+      } = await response.json()
 
       if (!response.ok) {
         throw new Error(
-          data.message || 'Nieprawidłowy email lub hasło.',
+          data.message ||
+            'Nieprawidłowy email lub hasło.',
         )
       }
 
       await login(data.token)
 
-      navigate('/dashboard')
+      if (data.user.role === 'TRAINER') {
+        navigate('/trainer/dashboard')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (error) {
       setError(
         error instanceof Error
@@ -61,7 +81,10 @@ function LoginPage() {
     <main className="login-page">
       <div className="login-card">
         <div className="login-card__header">
-          <Link to="/" className="login-card__logo">
+          <Link
+            to="/"
+            className="login-card__logo"
+          >
             FITBOOK
           </Link>
 
