@@ -221,7 +221,8 @@ function TrainerDashboardPage() {
   const upcomingAppointments =
     appointments.filter(
       (appointment) =>
-        new Date(appointment.startAt) > new Date(),
+        appointment.status !== 'COMPLETED' &&
+        appointment.status !== 'CANCELLED',
     )
 
   const uniqueClients = new Set(
@@ -307,7 +308,7 @@ function TrainerDashboardPage() {
 
   async function updateAppointmentStatus(
     appointmentId: number,
-    status: 'CONFIRMED' | 'CANCELLED',
+    status: 'CONFIRMED' | 'CANCELLED' | 'COMPLETED',
   ) {
     setUpdatingAppointmentId(appointmentId)
 
@@ -488,7 +489,7 @@ function TrainerDashboardPage() {
               </p>
 
               <h2>
-                Nadchodzące treningi
+                Rezerwacje i treningi
               </h2>
             </div>
           </div>
@@ -575,6 +576,28 @@ function TrainerDashboardPage() {
                         </button>
                       </div>
                     )}
+
+                    {appointment.status === 'CONFIRMED' &&
+                      new Date(appointment.endAt) <= new Date() && (
+                        <div className="trainer-appointment-actions">
+                          <button
+                            className="trainer-appointment-complete"
+                            disabled={
+                              updatingAppointmentId === appointment.id
+                            }
+                            onClick={() =>
+                              updateAppointmentStatus(
+                                appointment.id,
+                                'COMPLETED',
+                              )
+                            }
+                          >
+                            {updatingAppointmentId === appointment.id
+                              ? 'Zapisywanie...'
+                              : '✓ Oznacz jako zakończony'}
+                          </button>
+                        </div>
+                      )}
                   </article>
                 ),
               )}
@@ -582,7 +605,7 @@ function TrainerDashboardPage() {
           ) : (
             <div className="trainer-dashboard-empty">
               <p>
-                Nie masz jeszcze nadchodzących
+                Nie masz jeszcze żadnych
                 rezerwacji.
               </p>
             </div>
