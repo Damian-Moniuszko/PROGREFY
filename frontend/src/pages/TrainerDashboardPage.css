@@ -451,3 +451,56 @@
     grid-template-columns: 1fr;
   }
 }
+
+.trainer-appointment-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.trainer-appointment-actions button {
+  padding: 8px 12px;
+
+  border-radius: 7px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.trainer-appointment-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.trainer-appointment-confirm {
+  border: 1px solid var(--color-green);
+
+  color: var(--color-green-light);
+  background: rgba(31, 107, 72, 0.12);
+}
+
+.trainer-appointment-cancel {
+  border: 1px solid #5a3030;
+
+  color: #ff8f8f;
+  background: transparent;
+}
+
+.trainer-appointment-confirm:hover:not(:disabled) {
+  background: rgba(31, 107, 72, 0.22);
+}
+
+.trainer-appointment-cancel:hover:not(:disabled) {
+  background: rgba(138, 68, 68, 0.12);
+}
+
+@media (max-width: 800px) {
+  .trainer-appointment-actions {
+    width: 100%;
+  }
+
+  .trainer-appointment-actions button {
+    flex: 1;
+  }
+}

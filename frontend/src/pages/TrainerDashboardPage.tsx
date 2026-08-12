@@ -58,20 +58,23 @@ function TrainerDashboardPage() {
   const [showAvailabilityForm, setShowAvailabilityForm] =
   useState(false)
 
-const [availabilityDay, setAvailabilityDay] =
-  useState('MONDAY')
+  const [availabilityDay, setAvailabilityDay] =
+    useState('MONDAY')
 
-const [availabilityStart, setAvailabilityStart] =
-  useState('16:00')
+  const [availabilityStart, setAvailabilityStart] =
+    useState('16:00')
 
-const [availabilityEnd, setAvailabilityEnd] =
-  useState('20:00')
+  const [availabilityEnd, setAvailabilityEnd] =
+    useState('20:00')
 
-const [availabilitySaving, setAvailabilitySaving] =
-  useState(false)
+  const [availabilitySaving, setAvailabilitySaving] =
+    useState(false)
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  const [updatingAppointmentId, setUpdatingAppointmentId] =
+  useState<number | null>(null)
 
   useEffect(() => {
     if (authLoading) {
@@ -302,6 +305,63 @@ const [availabilitySaving, setAvailabilitySaving] =
     }
   }
 
+  async function updateAppointmentStatus(
+    appointmentId: number,
+    status: 'CONFIRMED' | 'CANCELLED',
+  ) {
+    setUpdatingAppointmentId(appointmentId)
+
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/me/trainer-appointments/${appointmentId}/status`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            status,
+          }),
+        },
+      )
+
+      const data = await response.json()
+
+      if (response.status === 401) {
+        logout()
+        navigate('/login')
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            'Nie udało się zmienić statusu rezerwacji.',
+        )
+      }
+
+      setAppointments((current) =>
+        current.map((appointment) =>
+          appointment.id === appointmentId
+            ? {
+                ...appointment,
+                status: data.appointment.status,
+              }
+            : appointment,
+        ),
+      )
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : 'Nie udało się zmienić statusu rezerwacji.',
+      )
+    } finally {
+      setUpdatingAppointmentId(null)
+    }
+  }
+
   return (
     <main className="trainer-dashboard-page">
       <div className="trainer-dashboard">
@@ -479,6 +539,42 @@ const [availabilitySaving, setAvailabilitySaving] =
                     <span className="trainer-appointment-status">
                       {appointment.status}
                     </span>
+
+                    {appointment.status === 'PENDING' && (
+                      <div className="trainer-appointment-actions">
+                        <button
+                          className="trainer-appointment-confirm"
+                          disabled={
+                            updatingAppointmentId === appointment.id
+                          }
+                          onClick={() =>
+                            updateAppointmentStatus(
+                              appointment.id,
+                              'CONFIRMED',
+                            )
+                          }
+                        >
+                          {updatingAppointmentId === appointment.id
+                            ? '...'
+                            : '✓ Akceptuj'}
+                        </button>
+
+                        <button
+                          className="trainer-appointment-cancel"
+                          disabled={
+                            updatingAppointmentId === appointment.id
+                          }
+                          onClick={() =>
+                            updateAppointmentStatus(
+                              appointment.id,
+                              'CANCELLED',
+                            )
+                          }
+                        >
+                          ✕ Odrzuć
+                        </button>
+                      </div>
+                    )}
                   </article>
                 ),
               )}
