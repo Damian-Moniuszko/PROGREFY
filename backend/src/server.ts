@@ -18,6 +18,7 @@ async function startServer() {
   try {
     await app.register(cors, {
       origin: true,
+      methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     })
 
     await app.register(fastifyJwt, {
