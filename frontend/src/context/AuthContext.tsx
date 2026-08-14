@@ -12,6 +12,7 @@ interface User {
   firstName: string
   lastName: string
   role: 'CLIENT' | 'TRAINER'
+  avatarUrl: string | null
 }
 
 interface AuthContextValue {

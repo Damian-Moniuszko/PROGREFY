@@ -61,11 +61,7 @@ function LoginPage() {
 
       await login(data.token)
 
-      if (data.user.role === 'TRAINER') {
-        navigate('/trainer/dashboard')
-      } else {
-        navigate('/dashboard')
-      }
+      navigate('/')
     } catch (error) {
       setError(
         error instanceof Error
@@ -85,7 +81,7 @@ function LoginPage() {
             to="/"
             className="login-card__logo"
           >
-            FITBOOK
+            PROGREFY
           </Link>
 
           <p className="login-card__eyebrow">
@@ -95,7 +91,7 @@ function LoginPage() {
           <h1>Zaloguj się</h1>
 
           <p>
-            Zaloguj się do swojego konta FITBOOK.
+            Zaloguj się do swojego konta PROGREFY.
           </p>
         </div>
 

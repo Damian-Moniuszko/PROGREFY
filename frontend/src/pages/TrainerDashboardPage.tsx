@@ -615,7 +615,7 @@ function TrainerDashboardPage() {
         <header className="trainer-dashboard__header">
           <div>
             <p className="trainer-dashboard__eyebrow">
-              FITBOOK · PANEL TRENERA
+              PROGREFY · PANEL TRENERA
             </p>
 
             <h1>

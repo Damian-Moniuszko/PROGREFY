@@ -7,7 +7,7 @@ function Footer() {
 
         <div className="footer__main">
           <div className="footer__brand">
-            <h2>FITBOOK</h2>
+            <h2>PROGREFY</h2>
 
             <p>
               Wszystko, czego potrzebujesz
@@ -31,11 +31,11 @@ function Footer() {
 
               <a href="#trainers">Zostań trenerem</a>
               <a href="#clients">Zarządzaj klientami</a>
-              <a href="#app">FITBOOK App</a>
+              <a href="#app">PROGREFY App</a>
             </div>
 
             <div className="footer__column">
-              <span>FITBOOK</span>
+              <span>PROGREFY</span>
 
               <a href="#top">Strona główna</a>
               <a href="#">Kontakt</a>
@@ -46,7 +46,7 @@ function Footer() {
         </div>
 
         <div className="footer__bottom">
-          <span>© 2026 FITBOOK. Wszystkie prawa zastrzeżone.</span>
+          <span>© 2026 PROGREFY. Wszystkie prawa zastrzeżone.</span>
 
           <span>Polska</span>
         </div>

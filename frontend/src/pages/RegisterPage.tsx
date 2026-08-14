@@ -98,17 +98,17 @@ function RegisterPage() {
             to="/"
             className="register-card__logo"
           >
-            FITBOOK
+            PROGREFY
           </Link>
 
           <p className="register-card__eyebrow">
-            DOŁĄCZ DO FITBOOK
+            DOŁĄCZ DO PROGREFY
           </p>
 
           <h1>Utwórz konto</h1>
 
           <p>
-            Zacznij korzystać z FITBOOK i znajdź
+            Zacznij korzystać z PROGREFY i znajdź
             swojego trenera.
           </p>
         </div>

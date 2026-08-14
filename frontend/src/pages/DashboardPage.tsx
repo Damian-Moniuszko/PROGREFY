@@ -389,7 +389,7 @@ function DashboardPage() {
         <header className="dashboard__header">
           <div>
             <p className="dashboard__eyebrow">
-              FITBOOK DASHBOARD
+              PROGREFY DASHBOARD
             </p>
 
             <h1>

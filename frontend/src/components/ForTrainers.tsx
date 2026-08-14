@@ -82,7 +82,7 @@ function ForTrainers() {
 
           <div className="trainer-dashboard">
             <div className="trainer-dashboard__topbar">
-              <strong>FITBOOK</strong>
+              <strong>PROGREFY</strong>
 
               <div className="trainer-dashboard__profile">
                 <span className="trainer-dashboard__status">
