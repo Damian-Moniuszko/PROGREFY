@@ -1,5 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import {
+  notifyFavoritesChanged,
+  subscribeToFavoritesChanged,
+} from '../utils/favoriteSync'
 import './TrainerPage.css'
 
 type Tab = 'booking' | 'reviews' | 'details'
@@ -117,6 +126,11 @@ function StarRating({
 function TrainerPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { user, token, logout } = useAuth()
+
+  const [isFavorite, setIsFavorite] = useState(false)
+  const [favoriteLoading, setFavoriteLoading] =
+    useState(false)
 
   const [trainer, setTrainer] =
     useState<Trainer | null>(null)
@@ -173,6 +187,20 @@ function TrainerPage() {
   const [reportOpen, setReportOpen] =
     useState(false)
 
+  const [reviewAppointmentId, setReviewAppointmentId] =
+    useState<number | null>(null)
+
+  const [reviewRating, setReviewRating] = useState(5)
+
+  const [reviewComment, setReviewComment] =
+    useState('')
+
+  const [reviewError, setReviewError] =
+    useState('')
+
+  const [reviewSubmitting, setReviewSubmitting] =
+    useState(false)
+
   useEffect(() => {
     async function fetchTrainer() {
       try {
@@ -209,6 +237,72 @@ function TrainerPage() {
     if (id) {
       fetchTrainer()
     }
+  }, [id])
+
+  useEffect(() => {
+    if (!id || !token) {
+      setIsFavorite(false)
+      return
+    }
+
+    async function fetchFavoriteStatus() {
+      try {
+        const response = await fetch(
+          'http://localhost:3000/api/me/favorites',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        )
+
+        if (response.status === 401) {
+          logout()
+          return
+        }
+
+        if (!response.ok) {
+          setIsFavorite(false)
+          return
+        }
+
+        const data = await response.json()
+
+        const favoriteExists =
+          (data.favorites ?? []).some(
+            (favorite: {
+              trainer: {
+                id: number
+              }
+            }) =>
+              favorite.trainer.id === Number(id),
+          )
+
+        setIsFavorite(favoriteExists)
+      } catch {
+        setIsFavorite(false)
+      }
+    }
+
+    fetchFavoriteStatus()
+  }, [id, token, logout])
+
+  /*
+   * Synchronizacja serduszka z:
+   * - listą trenerów
+   * - zakładką Ulubione
+   * - innymi otwartymi komponentami
+   */
+  useEffect(() => {
+    return subscribeToFavoritesChanged(
+      (trainerId, nextIsFavorite) => {
+        if (trainerId !== Number(id)) {
+          return
+        }
+
+        setIsFavorite(nextIsFavorite)
+      },
+    )
   }, [id])
 
   useEffect(() => {
@@ -250,14 +344,229 @@ function TrainerPage() {
     fetchSlots()
   }, [id, selectedDate])
 
+  async function openReviewForm() {
+    const currentToken =
+      localStorage.getItem('token')
+
+    if (!currentToken) {
+      navigate('/login')
+      return
+    }
+
+    try {
+      setReviewError('')
+
+      const response = await fetch(
+        'http://localhost:3000/api/me/reviewable-appointments',
+        {
+          headers: {
+            Authorization: `Bearer ${currentToken}`,
+          },
+        },
+      )
+
+      if (response.status === 401) {
+        navigate('/login')
+        return
+      }
+
+      if (response.status === 403) {
+        setReviewError(
+          'Opinie mogą dodawać wyłącznie klienci.',
+        )
+        return
+      }
+
+      const data = await response.json()
+
+      const appointment =
+        data.appointments?.find(
+          (item: {
+            id: number
+            trainer: {
+              id: number
+            }
+          }) =>
+            item.trainer.id === Number(id),
+        )
+
+      if (!appointment) {
+        setReviewError(
+          'Możesz dodać opinię po zakończonej wizycie z tym trenerem.',
+        )
+        return
+      }
+
+      setReviewAppointmentId(appointment.id)
+    } catch {
+      setReviewError(
+        'Nie udało się sprawdzić możliwości dodania opinii.',
+      )
+    }
+  }
+
+  async function submitReview() {
+    const currentToken =
+      localStorage.getItem('token')
+
+    if (
+      !currentToken ||
+      !reviewAppointmentId
+    ) {
+      return
+    }
+
+    try {
+      setReviewSubmitting(true)
+      setReviewError('')
+
+      const response = await fetch(
+        'http://localhost:3000/api/me/reviews',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${currentToken}`,
+          },
+          body: JSON.stringify({
+            appointmentId: reviewAppointmentId,
+            rating: reviewRating,
+            comment: reviewComment,
+          }),
+        },
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setReviewError(
+          data.message ??
+            'Nie udało się dodać opinii.',
+        )
+
+        return
+      }
+
+      setReviewAppointmentId(null)
+      setReviewComment('')
+
+      window.location.reload()
+    } catch {
+      setReviewError(
+        'Nie udało się dodać opinii.',
+      )
+    } finally {
+      setReviewSubmitting(false)
+    }
+  }
+
+  async function toggleFavorite() {
+    if (!id) {
+      return
+    }
+
+    if (!token) {
+      navigate('/login')
+      return
+    }
+
+    if (favoriteLoading) {
+      return
+    }
+
+    const trainerId = Number(id)
+
+    setFavoriteLoading(true)
+
+    try {
+      const currentResponse = await fetch(
+        'http://localhost:3000/api/me/favorites',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      if (currentResponse.status === 401) {
+        logout()
+        navigate('/login')
+        return
+      }
+
+      if (!currentResponse.ok) {
+        return
+      }
+
+      const currentData =
+        await currentResponse.json()
+
+      const currentlyFavorite =
+        (currentData.favorites ?? []).some(
+          (favorite: {
+            trainer: {
+              id: number
+            }
+          }) =>
+            favorite.trainer.id === trainerId,
+        )
+
+      const response = await fetch(
+        currentlyFavorite
+          ? `http://localhost:3000/api/me/favorites/${trainerId}`
+          : 'http://localhost:3000/api/me/favorites',
+        {
+          method: currentlyFavorite
+            ? 'DELETE'
+            : 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            ...(currentlyFavorite
+              ? {}
+              : {
+                  'Content-Type': 'application/json',
+                }),
+          },
+          ...(currentlyFavorite
+            ? {}
+            : {
+                body: JSON.stringify({
+                  trainerId,
+                }),
+              }),
+        },
+      )
+
+      if (!response.ok) {
+        console.error(
+          'Favorite request failed',
+          response.status,
+          await response.text(),
+        )
+        return
+      }
+
+      setIsFavorite(!currentlyFavorite)
+
+      notifyFavoritesChanged(
+        trainerId,
+        !currentlyFavorite,
+      )
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setFavoriteLoading(false)
+    }
+  }
+
   async function handleBooking() {
     if (!selectedSlot || !trainer) {
       return
     }
 
-    const token = localStorage.getItem('token')
+    const currentToken = localStorage.getItem('token')
 
-    if (!token) {
+    if (!currentToken) {
       navigate('/login')
       return
     }
@@ -276,7 +585,7 @@ function TrainerPage() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${currentToken}`,
           },
           body: JSON.stringify({
             trainerId: trainer.id,
@@ -293,54 +602,13 @@ function TrainerPage() {
         return
       }
 
-      if (response.status === 403) {
-        setBookingError(
-          'Tylko klient może zarezerwować trening.',
-        )
-        return
-      }
-
-      if (response.status === 409) {
-        setBookingError(
-          'Ten termin został właśnie zajęty. Wybierz inny.',
-        )
-
-        setSlots((currentSlots) =>
-          currentSlots.map((slot) =>
-            slot.startTime ===
-            selectedSlot.startTime
-              ? {
-                  ...slot,
-                  available: false,
-                }
-              : slot,
-          ),
-        )
-
-        setSelectedSlot(null)
-        return
-      }
-
       if (!response.ok) {
         throw new Error(
-          data.message ||
-            'Nie udało się zarezerwować treningu.',
+          data.message || 'Nie udało się zarezerwować treningu.',
         )
       }
 
       setBookingSuccess(true)
-
-      setSlots((currentSlots) =>
-        currentSlots.map((slot) =>
-          slot.startTime === selectedSlot.startTime
-            ? {
-                ...slot,
-                available: false,
-              }
-            : slot,
-        ),
-      )
-
       setSelectedSlot(null)
 
       navigate('/dashboard')
@@ -359,20 +627,34 @@ function TrainerPage() {
     const year = calendarMonth.getFullYear()
     const month = calendarMonth.getMonth()
 
-    const firstDay = new Date(year, month, 1)
-    const lastDay = new Date(year, month + 1, 0)
+    const firstDay = new Date(
+      year,
+      month,
+      1,
+    )
+
+    const lastDay = new Date(
+      year,
+      month + 1,
+      0,
+    )
 
     const firstWeekday =
       (firstDay.getDay() + 6) % 7
 
-    const daysInMonth = lastDay.getDate()
+    const daysInMonth =
+      lastDay.getDate()
 
     const days: Array<{
       date: Date
       currentMonth: boolean
     }> = []
 
-    for (let i = firstWeekday - 1; i >= 0; i--) {
+    for (
+      let i = firstWeekday - 1;
+      i >= 0;
+      i--
+    ) {
       days.push({
         date: new Date(
           year,
@@ -383,9 +665,17 @@ function TrainerPage() {
       })
     }
 
-    for (let day = 1; day <= daysInMonth; day++) {
+    for (
+      let day = 1;
+      day <= daysInMonth;
+      day++
+    ) {
       days.push({
-        date: new Date(year, month, day),
+        date: new Date(
+          year,
+          month,
+          day,
+        ),
         currentMonth: true,
       })
     }
@@ -464,10 +754,13 @@ function TrainerPage() {
   }
 
   function formatMonth() {
-    return new Intl.DateTimeFormat('pl-PL', {
-      month: 'long',
-      year: 'numeric',
-    }).format(calendarMonth)
+    return new Intl.DateTimeFormat(
+      'pl-PL',
+      {
+        month: 'long',
+        year: 'numeric',
+      },
+    ).format(calendarMonth)
   }
 
   function formatSelectedDate() {
@@ -475,22 +768,30 @@ function TrainerPage() {
       return ''
     }
 
-    return new Intl.DateTimeFormat('pl-PL', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(
-      new Date(`${selectedDate}T12:00:00`),
+    return new Intl.DateTimeFormat(
+      'pl-PL',
+      {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      },
+    ).format(
+      new Date(
+        `${selectedDate}T12:00:00`,
+      ),
     )
   }
 
   function formatReviewDate(date: string) {
-    return new Intl.DateTimeFormat('pl-PL', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(new Date(date))
+    return new Intl.DateTimeFormat(
+      'pl-PL',
+      {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      },
+    ).format(new Date(date))
   }
 
   function openTab(tab: Tab) {
@@ -516,7 +817,8 @@ function TrainerPage() {
     return (
       <main className="trainer-page">
         <div className="trainer-page__error">
-          {error || 'Nie znaleziono trenera.'}
+          {error ||
+            'Nie znaleziono trenera.'}
         </div>
       </main>
     )
@@ -525,13 +827,7 @@ function TrainerPage() {
   return (
     <main className="trainer-page">
       <div className="trainer-page__container">
-
-        {/* =========================
-            PROFILE
-        ========================= */}
-
         <section className="trainer-profile">
-
           <div className="trainer-profile__avatar">
             {trainer.user.avatarUrl ? (
               <img
@@ -550,15 +846,52 @@ function TrainerPage() {
                   r="10"
                 />
 
-                <path
-                  d="M14 55c1.5-12 8-19 18-19s16.5 7 18 19"
-                />
+                <path d="M14 55c1.5-12 8-19 18-19s16.5 7 18 19" />
               </svg>
             )}
           </div>
 
-          <div className="trainer-profile__info">
+          <button
+            type="button"
+            className={`trainer-profile__favorite ${
+              isFavorite
+                ? 'trainer-profile__favorite--active'
+                : ''
+            }`}
+            onClick={toggleFavorite}
+            disabled={favoriteLoading}
+            aria-label={
+              isFavorite
+                ? 'Usuń trenera z ulubionych'
+                : 'Dodaj trenera do ulubionych'
+            }
+            aria-pressed={isFavorite}
+            title={
+              isFavorite
+                ? 'Usuń z ulubionych'
+                : 'Dodaj do ulubionych'
+            }
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                d="M20.8 8.7c0 5.2-8.8 10.2-8.8 10.2S3.2 13.9 3.2 8.7C3.2 5.9 5.1 4 7.7 4c1.7 0 3.3.9 4.3 2.2C13 4.9 14.6 4 16.3 4c2.6 0 4.5 1.9 4.5 4.7Z"
+                fill={
+                  isFavorite
+                    ? 'currentColor'
+                    : 'none'
+                }
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
 
+          <div className="trainer-profile__info">
             <p className="trainer-profile__eyebrow">
               TRENER PERSONALNY
             </p>
@@ -580,11 +913,13 @@ function TrainerPage() {
               </p>
             )}
 
-            {reviewSummary.averageRating !== null && (
+            {reviewSummary.averageRating !==
+              null && (
               <div className="trainer-profile__rating">
-
                 <StarRating
-                  rating={reviewSummary.averageRating}
+                  rating={
+                    reviewSummary.averageRating
+                  }
                 />
 
                 <strong>
@@ -595,28 +930,25 @@ function TrainerPage() {
 
                 <span>
                   ({reviewSummary.reviewCount}{' '}
-                  {reviewSummary.reviewCount === 1
+                  {reviewSummary.reviewCount ===
+                  1
                     ? 'opinia'
                     : 'opinii'}
                   )
                 </span>
-
               </div>
             )}
 
             <div className="trainer-profile__details">
-
               {trainer.location && (
                 <div className="trainer-profile__detail">
-
                   <div className="trainer-profile__detail-icon">
                     <svg
                       viewBox="0 0 24 24"
                       aria-hidden="true"
                     >
-                      <path
-                        d="M12 21s7-6.2 7-12A7 7 0 0 0 5 9c0 5.8 7 12 7 12Z"
-                      />
+                      <path d="M12 21s7-6.2 7-12A7 7 0 0 0 5 9c0 5.8 7 12 7 12Z" />
+
                       <circle
                         cx="12"
                         cy="9"
@@ -634,24 +966,19 @@ function TrainerPage() {
                       {trainer.location}
                     </strong>
                   </div>
-
                 </div>
               )}
 
               {trainer.price && (
                 <div className="trainer-profile__detail">
-
                   <div className="trainer-profile__detail-icon">
                     <svg
                       viewBox="0 0 24 24"
                       aria-hidden="true"
                     >
-                      <path
-                        d="M12 3v18"
-                      />
-                      <path
-                        d="M16.5 7.5c0-1.7-1.8-3-4.5-3S7.5 5.8 7.5 8s1.8 3 4.5 3 4.5 1.3 4.5 3-1.8 3-4.5 3-4.5-1.3-4.5-3"
-                      />
+                      <path d="M12 3v18" />
+
+                      <path d="M16.5 7.5c0-1.7-1.8-3-4.5-3S7.5 5.8 7.5 8s1.8 3 4.5 3 4.5 1.3 4.5 3-1.8 3-4.5 3-4.5-1.3-4.5-3" />
                     </svg>
                   </div>
 
@@ -661,16 +988,16 @@ function TrainerPage() {
                     </small>
 
                     <strong>
-                      {formatPrice(trainer.price)}
+                      {formatPrice(
+                        trainer.price,
+                      )}
                     </strong>
                   </div>
-
                 </div>
               )}
 
               {trainer.durationMinutes && (
                 <div className="trainer-profile__detail">
-
                   <div className="trainer-profile__detail-icon">
                     <svg
                       viewBox="0 0 24 24"
@@ -682,9 +1009,7 @@ function TrainerPage() {
                         r="8.5"
                       />
 
-                      <path
-                        d="M12 7v5l3.5 2"
-                      />
+                      <path d="M12 7v5l3.5 2" />
                     </svg>
                   </div>
 
@@ -694,24 +1019,17 @@ function TrainerPage() {
                     </small>
 
                     <strong>
-                      {trainer.durationMinutes} min
+                      {trainer.durationMinutes}{' '}
+                      min
                     </strong>
                   </div>
-
                 </div>
               )}
-
             </div>
-
           </div>
         </section>
 
-        {/* =========================
-            TABS
-        ========================= */}
-
         <nav className="trainer-tabs">
-
           <button
             type="button"
             className={`trainer-tab ${
@@ -757,18 +1075,11 @@ function TrainerPage() {
           >
             Szczegóły
           </button>
-
         </nav>
-
-        {/* =========================
-            BOOKING
-        ========================= */}
 
         {activeTab === 'booking' && (
           <section className="trainer-section trainer-booking">
-
             <div className="booking-header">
-
               <p className="trainer-profile__eyebrow">
                 DOSTĘPNOŚĆ
               </p>
@@ -781,19 +1092,15 @@ function TrainerPage() {
                 Wybierz dzień, a następnie dogodną
                 godzinę.
               </p>
-
             </div>
 
             <div className="booking-calendar">
-
               <div className="booking-calendar__header">
-
                 <h3>
                   {formatMonth()}
                 </h3>
 
                 <div className="booking-calendar__navigation">
-
                   <button
                     type="button"
                     onClick={
@@ -813,9 +1120,7 @@ function TrainerPage() {
                   >
                     ›
                   </button>
-
                 </div>
-
               </div>
 
               <div className="booking-calendar__weekdays">
@@ -829,13 +1134,11 @@ function TrainerPage() {
               </div>
 
               <div className="booking-calendar__grid">
-
                 {calendarDays.map(
                   ({
                     date,
                     currentMonth,
                   }) => {
-
                     const dateString =
                       dateToString(date)
 
@@ -872,14 +1175,11 @@ function TrainerPage() {
                     )
                   },
                 )}
-
               </div>
             </div>
 
             <div className="booking-times">
-
               <div className="booking-times__heading">
-
                 <h3>
                   {formatSelectedDate()}
                 </h3>
@@ -887,7 +1187,6 @@ function TrainerPage() {
                 <span className="booking-times__hint">
                   Wybierz godzinę
                 </span>
-
               </div>
 
               {slotsLoading ? (
@@ -897,7 +1196,6 @@ function TrainerPage() {
                 </div>
               ) : slots.length === 0 ? (
                 <div className="trainer-slots-empty">
-
                   <div className="trainer-slots-empty__icon">
                     —
                   </div>
@@ -914,13 +1212,10 @@ function TrainerPage() {
                   <p>
                     Spróbuj wybrać inny dzień.
                   </p>
-
                 </div>
               ) : (
                 <div className="booking-time-list">
-
                   {slots.map((slot) => {
-
                     const selected =
                       selectedSlot?.startTime ===
                         slot.startTime &&
@@ -931,7 +1226,9 @@ function TrainerPage() {
                       <button
                         key={`${slot.startTime}-${slot.endTime}`}
                         type="button"
-                        disabled={!slot.available}
+                        disabled={
+                          !slot.available
+                        }
                         className={`booking-time ${
                           slot.available
                             ? 'booking-time--available'
@@ -963,17 +1260,13 @@ function TrainerPage() {
                       </button>
                     )
                   })}
-
                 </div>
               )}
-
             </div>
 
             {selectedSlot && (
               <div className="booking-summary">
-
                 <div className="booking-summary__service">
-
                   <span className="booking-summary__label">
                     WYBRANY TRENING
                   </span>
@@ -987,13 +1280,10 @@ function TrainerPage() {
                     {selectedSlot.startTime} –{' '}
                     {selectedSlot.endTime}
                   </p>
-
                 </div>
 
                 <div className="booking-summary__checkout">
-
                   <div>
-
                     <strong>
                       {formatPrice(
                         trainer.price,
@@ -1001,24 +1291,24 @@ function TrainerPage() {
                     </strong>
 
                     <span>
-                      {trainer.durationMinutes} min
+                      {trainer.durationMinutes}{' '}
+                      min
                     </span>
-
                   </div>
 
                   <button
                     type="button"
                     className="selected-slot__button"
-                    onClick={handleBooking}
+                    onClick={
+                      handleBooking
+                    }
                     disabled={booking}
                   >
                     {booking
                       ? 'Rezerwowanie...'
                       : 'Zarezerwuj trening'}
                   </button>
-
                 </div>
-
               </div>
             )}
 
@@ -1030,7 +1320,6 @@ function TrainerPage() {
 
             {bookingSuccess && (
               <div className="booking-message booking-message--success">
-
                 <strong>
                   Trening został zarezerwowany.
                 </strong>
@@ -1048,22 +1337,14 @@ function TrainerPage() {
                 >
                   Przejdź do dashboardu
                 </button>
-
               </div>
             )}
-
           </section>
         )}
 
-        {/* =========================
-            REVIEWS
-        ========================= */}
-
         {activeTab === 'reviews' && (
           <section className="trainer-section trainer-reviews">
-
             <div className="trainer-section__title">
-
               <p className="trainer-profile__eyebrow">
                 OPINIE
               </p>
@@ -1076,13 +1357,10 @@ function TrainerPage() {
                 Sprawdź doświadczenia osób, które
                 trenowały z tym trenerem.
               </p>
-
             </div>
 
             <div className="review-summary">
-
               <div className="review-summary__score">
-
                 <strong>
                   {reviewSummary.averageRating !==
                   null
@@ -1104,15 +1382,14 @@ function TrainerPage() {
 
                 <span>
                   {reviewSummary.reviewCount}{' '}
-                  {reviewSummary.reviewCount === 1
+                  {reviewSummary.reviewCount ===
+                  1
                     ? 'opinia'
                     : 'opinii'}
                 </span>
-
               </div>
 
               <div className="review-summary__text">
-
                 <strong>
                   Ocena trenera
                 </strong>
@@ -1121,14 +1398,11 @@ function TrainerPage() {
                   Średnia ocena na podstawie opinii
                   klientów.
                 </span>
-
               </div>
-
             </div>
 
             {trainer.reviews.length === 0 ? (
               <div className="reviews-empty">
-
                 <h3>
                   Brak opinii
                 </h3>
@@ -1137,30 +1411,23 @@ function TrainerPage() {
                   Ten trener nie ma jeszcze żadnych
                   opinii.
                 </p>
-
               </div>
             ) : (
               <div className="reviews-list">
-
                 {trainer.reviews.map(
                   (review) => (
                     <article
                       className="review-card"
                       key={review.id}
                     >
-
                       <div className="review-card__header">
-
                         <div className="review-card__user">
-
                           <div className="review-card__avatar">
-
                             {review.client.user
                               .avatarUrl ? (
                               <img
                                 src={
-                                  review
-                                    .client
+                                  review.client
                                     .user
                                     .avatarUrl
                                 }
@@ -1176,21 +1443,17 @@ function TrainerPage() {
                                 )}
                               </>
                             )}
-
                           </div>
 
                           <div>
-
                             <strong>
                               {
-                                review
-                                  .client
+                                review.client
                                   .user
                                   .firstName
                               }{' '}
                               {
-                                review
-                                  .client
+                                review.client
                                   .user
                                   .lastName
                               }
@@ -1201,9 +1464,7 @@ function TrainerPage() {
                                 review.createdAt,
                               )}
                             </span>
-
                           </div>
-
                         </div>
 
                         <StarRating
@@ -1211,7 +1472,6 @@ function TrainerPage() {
                             review.rating
                           }
                         />
-
                       </div>
 
                       {review.comment && (
@@ -1219,18 +1479,14 @@ function TrainerPage() {
                           {review.comment}
                         </p>
                       )}
-
                     </article>
                   ),
                 )}
-
               </div>
             )}
 
             <div className="review-action">
-
               <div>
-
                 <h3>
                   Oceń trenera
                 </h3>
@@ -1239,35 +1495,114 @@ function TrainerPage() {
                   Korzystałeś z usług tego trenera?
                   Podziel się swoją opinią.
                 </p>
-
               </div>
 
               <button
                 type="button"
                 className="review-action__button"
-                onClick={() => {
-                  alert(
-                    'Formularz dodawania opinii zostanie podłączony po dodaniu endpointu opinii.',
-                  )
-                }}
+                onClick={openReviewForm}
               >
                 Dodaj opinię
               </button>
-
             </div>
 
+            {reviewError &&
+              !reviewAppointmentId && (
+                <p className="review-action__error">
+                  {reviewError}
+                </p>
+              )}
+
+            {reviewAppointmentId && (
+              <div className="review-form">
+                <h3>Dodaj opinię</h3>
+
+                <p>
+                  Oceń swoje doświadczenie z trenerem.
+                </p>
+
+                <div
+                  className="review-form__stars"
+                  aria-label="Ocena"
+                >
+                  {[1, 2, 3, 4, 5].map(
+                    (rating) => (
+                      <button
+                        type="button"
+                        key={rating}
+                        onClick={() =>
+                          setReviewRating(
+                            rating,
+                          )
+                        }
+                        aria-label={`${rating} gwiazdek`}
+                        className={
+                          rating <=
+                          reviewRating
+                            ? 'is-selected'
+                            : ''
+                        }
+                      >
+                        ★
+                      </button>
+                    ),
+                  )}
+                </div>
+
+                <label htmlFor="review-comment">
+                  Komentarz (opcjonalnie)
+                </label>
+
+                <textarea
+                  id="review-comment"
+                  maxLength={2000}
+                  value={reviewComment}
+                  onChange={(event) =>
+                    setReviewComment(
+                      event.target.value,
+                    )
+                  }
+                  placeholder="Napisz, jak przebiegła współpraca."
+                />
+
+                {reviewError && (
+                  <p className="review-action__error">
+                    {reviewError}
+                  </p>
+                )}
+
+                <div className="review-form__actions">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setReviewAppointmentId(
+                        null,
+                      )
+                    }
+                  >
+                    Anuluj
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={submitReview}
+                    disabled={
+                      reviewSubmitting
+                    }
+                  >
+                    {reviewSubmitting
+                      ? 'Wysyłanie…'
+                      : 'Opublikuj opinię'}
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         )}
 
-        {/* =========================
-            DETAILS
-        ========================= */}
-
         {activeTab === 'details' && (
           <section className="trainer-section trainer-details">
-
             <div className="trainer-section__title">
-
               <p className="trainer-profile__eyebrow">
                 INFORMACJE
               </p>
@@ -1280,15 +1615,10 @@ function TrainerPage() {
                 Wszystkie najważniejsze informacje
                 dotyczące współpracy.
               </p>
-
             </div>
 
             <div className="details-list">
-
-              {/* O MNIE */}
-
               <article className="details-card">
-
                 <span className="details-card__label">
                   O MNIE
                 </span>
@@ -1297,19 +1627,14 @@ function TrainerPage() {
                   {trainer.bio ||
                     'Trener nie dodał jeszcze opisu.'}
                 </p>
-
               </article>
 
-              {/* KONTAKT */}
-
               <article className="details-card">
-
                 <span className="details-card__label">
                   KONTAKT
                 </span>
 
                 <div className="details-contact">
-
                   <a
                     className="contact-row"
                     href={`mailto:${trainer.user.email}`}
@@ -1337,15 +1662,10 @@ function TrainerPage() {
                       </strong>
                     </a>
                   )}
-
                 </div>
-
               </article>
 
-              {/* SOCIAL MEDIA */}
-
               <article className="details-card">
-
                 <span className="details-card__label">
                   SOCIAL MEDIA
                 </span>
@@ -1358,7 +1678,6 @@ function TrainerPage() {
                   </p>
                 ) : (
                   <div className="social-links">
-
                     {trainer.socialLinks.map(
                       (social) => (
                         <a
@@ -1380,15 +1699,9 @@ function TrainerPage() {
                         </a>
                       ),
                     )}
-
                   </div>
                 )}
-
               </article>
-
-              {/* =========================
-                  PAYMENT INFORMATION
-              ========================= */}
 
               <div
                 className={`details-accordion ${
@@ -1397,7 +1710,6 @@ function TrainerPage() {
                     : ''
                 }`}
               >
-
                 <button
                   type="button"
                   className="details-accordion__header"
@@ -1407,7 +1719,6 @@ function TrainerPage() {
                     )
                   }
                 >
-
                   <div>
                     <span className="details-card__label">
                       Zasady płatności i anulowania wizyty
@@ -1417,13 +1728,10 @@ function TrainerPage() {
                   <span className="details-accordion__arrow">
                     →
                   </span>
-
                 </button>
 
                 <div className="details-accordion__content">
-
                   <div className="details-text">
-
                     <p>
                       Zasady płatności oraz warunki
                       anulowania wizyty ustalane są
@@ -1450,16 +1758,9 @@ function TrainerPage() {
                           ani anulowania wizyty.
                         </p>
                       )}
-
                   </div>
-
                 </div>
-
               </div>
-
-              {/* =========================
-                  CONSUMER INFORMATION
-              ========================= */}
 
               <div
                 className={`details-accordion details-accordion--consumer ${
@@ -1468,7 +1769,6 @@ function TrainerPage() {
                     : ''
                 }`}
               >
-
                 <button
                   type="button"
                   className="details-accordion__header"
@@ -1478,7 +1778,6 @@ function TrainerPage() {
                     )
                   }
                 >
-
                   <div>
                     <span className="details-card__label">
                       Informacje dla konsumentów
@@ -1488,13 +1787,10 @@ function TrainerPage() {
                   <span className="details-accordion__arrow">
                     →
                   </span>
-
                 </button>
 
                 <div className="details-accordion__content">
-
                   <div className="consumer-info">
-
                     <p>
                       PROGREFY udostępnia internetową
                       platformę do rezerwacji usług
@@ -1523,17 +1819,12 @@ function TrainerPage() {
                       Szczegółowe informacje dotyczące
                       korzystania z platformy znajdziesz
                       w{' '}
-                      <button
-                        type="button"
+                      <Link
+                        to="/regulamin"
                         className="consumer-info__link"
-                        onClick={() => {
-                          alert(
-                            'Regulamin PROGREFY zostanie podłączony w kolejnym kroku.',
-                          )
-                        }}
                       >
                         Regulaminie PROGREFY
-                      </button>
+                      </Link>
                       .
                     </p>
 
@@ -1550,16 +1841,9 @@ function TrainerPage() {
                       kolejności skontaktuj się z
                       trenerem.
                     </p>
-
                   </div>
-
                 </div>
-
               </div>
-
-              {/* =========================
-                  REPORT
-              ========================= */}
 
               <div
                 className={`details-accordion details-accordion--report ${
@@ -1568,7 +1852,6 @@ function TrainerPage() {
                     : ''
                 }`}
               >
-
                 <button
                   type="button"
                   className="details-accordion__header"
@@ -1578,7 +1861,6 @@ function TrainerPage() {
                     )
                   }
                 >
-
                   <div>
                     <span className="details-card__label">
                       Zgłoś
@@ -1588,13 +1870,10 @@ function TrainerPage() {
                   <span className="details-accordion__arrow">
                     →
                   </span>
-
                 </button>
 
                 <div className="details-accordion__content">
-
                   <div className="details-text">
-
                     <p>
                       Jeżeli zauważyłeś problem,
                       nieprawidłowość lub zachowanie,
@@ -1602,29 +1881,18 @@ function TrainerPage() {
                       możesz zgłosić je naszemu zespołowi.
                     </p>
 
-                    <button
-                      type="button"
+                    <Link
                       className="report-button"
-                      onClick={() => {
-                        alert(
-                          'Formularz zgłoszenia zostanie podłączony w kolejnym kroku.',
-                        )
-                      }}
+                      to={`/trainers/${id}/report`}
                     >
                       Przejdź do formularza zgłoszenia
-                    </button>
-
+                    </Link>
                   </div>
-
                 </div>
-
               </div>
-
             </div>
-
           </section>
         )}
-
       </div>
     </main>
   )

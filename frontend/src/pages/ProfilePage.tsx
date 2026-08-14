@@ -31,10 +31,6 @@ function ProfilePage() {
     return <Navigate to="/login" replace />
   }
 
-  const dashboardPath = user.role === 'TRAINER'
-    ? '/trainer/dashboard'
-    : '/dashboard'
-
   const visitLabel = user.role === 'TRAINER' ? 'Rezerwacje' : 'Wizyty'
   const visitDescription = user.role === 'TRAINER'
     ? 'Zarządzaj rezerwacjami treningów'
@@ -65,7 +61,7 @@ function ProfilePage() {
           <div className="profile-menu__group">
             <p className="profile-menu__label">KONTO</p>
 
-            <Link className="profile-row" to={dashboardPath}>
+            <Link className="profile-row" to="/profile/visits">
               <span>
                 <strong>{visitLabel}</strong>
                 <small>{visitDescription}</small>
@@ -109,7 +105,7 @@ function ProfilePage() {
           <div className="profile-menu__group">
             <p className="profile-menu__label">INFORMACJE</p>
 
-            <Link className="profile-row" to="/profile/terms">
+            <Link className="profile-row" to="/regulamin">
               <span><strong>Regulamin</strong></span>
               <ArrowIcon />
             </Link>

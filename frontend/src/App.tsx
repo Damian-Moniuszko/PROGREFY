@@ -9,6 +9,8 @@ import RegisterPage from './pages/RegisterPage'
 import TrainerDashboardPage from './pages/TrainerDashboardPage'
 import ProfilePage from './pages/ProfilePage'
 import ProfileSectionPage from './pages/ProfileSectionPage'
+import TermsPage from './pages/TermsPage'
+import ReportPage from './pages/ReportPage'
 
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -37,6 +39,8 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/trainers" element={<TrainersPage />} />
           <Route path="/trainers/:id" element={<TrainerPage />} />
+          <Route path="/trainers/:id/report" element={<ReportPage />} />
+          <Route path="/regulamin" element={<TermsPage />} />
         </Route>
 
         {/* AUTH */}

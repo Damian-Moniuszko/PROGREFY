@@ -343,6 +343,8 @@
 }
 
 .trainer-card__avatar {
+  position: relative;
+
   width: 100%;
   height: 220px;
 
@@ -361,6 +363,110 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/*
+ * SERDUSZKO NA KARCIE TRENERA
+ */
+
+.trainer-card__favorite {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+
+  background: rgba(8, 8, 8, 0.82);
+
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  cursor: pointer;
+
+  z-index: 5;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.trainer-card__favorite svg {
+  width: 21px;
+  height: 21px;
+
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  transition:
+    fill 0.2s ease,
+    transform 0.2s ease;
+}
+
+.trainer-card__favorite:hover:not(:disabled) {
+  transform: scale(1.08);
+
+  border-color: rgba(255, 255, 255, 0.38);
+
+  background: rgba(18, 18, 18, 0.94);
+
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.42),
+    0 0 0 4px rgba(255, 255, 255, 0.04);
+}
+
+.trainer-card__favorite:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.trainer-card__favorite--active {
+  border-color: rgba(46, 157, 103, 0.9);
+
+  color: white;
+
+  background: rgba(17, 55, 39, 0.94);
+
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.42),
+    0 0 0 4px rgba(46, 157, 103, 0.08);
+}
+
+.trainer-card__favorite--active svg {
+  fill: currentColor;
+}
+
+.trainer-card__favorite--active:hover:not(:disabled) {
+  border-color: var(--color-green-light);
+
+  background: rgba(25, 78, 53, 0.96);
+
+  color: var(--color-green-light);
+}
+
+.trainer-card__favorite:disabled {
+  opacity: 0.55;
+  cursor: wait;
 }
 
 .trainer-card__content {
@@ -557,5 +663,17 @@
 
   .trainer-card__avatar {
     height: 240px;
+  }
+
+  .trainer-card__favorite {
+    top: 12px;
+    right: 12px;
+
+    width: 42px;
+    height: 42px;
+  }
+
+  .trainer-card__favorite--active {
+    color: white;
   }
 }

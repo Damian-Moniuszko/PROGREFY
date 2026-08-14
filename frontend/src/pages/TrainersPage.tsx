@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import './TrainersPage.css'
+import {
+  notifyFavoritesChanged,
+  subscribeToFavoritesChanged,
+} from '../utils/favoriteSync'
 
 interface Trainer {
   id: number
@@ -16,20 +20,40 @@ interface Trainer {
   }
 }
 
+interface FavoriteResponse {
+  favorites?: Array<{
+    trainer: {
+      id: number
+    }
+  }>
+}
+
 function TrainersPage() {
   const [trainers, setTrainers] = useState<Trainer[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const [favoriteTrainerIds, setFavoriteTrainerIds] =
+    useState<number[]>([])
+
+  const [favoriteLoadingId, setFavoriteLoadingId] =
+    useState<number | null>(null)
+
   const [searchQuery, setSearchQuery] = useState('')
   const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 
-  const [selectedLocation, setSelectedLocation] = useState('')
-  const [selectedSpecialization, setSelectedSpecialization] = useState('')
-  const [selectedDuration, setSelectedDuration] = useState('')
+  const [selectedLocation, setSelectedLocation] =
+    useState('')
+
+  const [selectedSpecialization, setSelectedSpecialization] =
+    useState('')
+
+  const [selectedDuration, setSelectedDuration] =
+    useState('')
 
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
+
 
   useEffect(() => {
     async function fetchTrainers() {
@@ -39,14 +63,16 @@ function TrainersPage() {
         )
 
         if (!response.ok) {
-          throw new Error('Failed to fetch trainers')
+          throw new Error()
         }
 
         const data = await response.json()
 
-        setTrainers(data.trainers)
+        setTrainers(data.trainers ?? [])
       } catch {
-        setError('Nie udało się pobrać trenerów.')
+        setError(
+          'Nie udało się pobrać trenerów.',
+        )
       } finally {
         setLoading(false)
       }
@@ -55,107 +81,216 @@ function TrainersPage() {
     fetchTrainers()
   }, [])
 
+
+  async function loadFavorites() {
+    const token =
+      localStorage.getItem('token')
+
+    if (!token) {
+      setFavoriteTrainerIds([])
+      return
+    }
+
+    try {
+      const response = await fetch(
+        'http://localhost:3000/api/me/favorites',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      if (!response.ok) {
+        return
+      }
+
+      const data: FavoriteResponse =
+        await response.json()
+
+      setFavoriteTrainerIds(
+        (data.favorites ?? []).map(
+          (item) =>
+            item.trainer.id,
+        ),
+      )
+    } catch {
+      setFavoriteTrainerIds([])
+    }
+  }
+
+
+  useEffect(() => {
+    loadFavorites()
+  }, [])
+
+
+  useEffect(() => {
+    return subscribeToFavoritesChanged(
+      (
+        trainerId,
+        isFavorite,
+      ) => {
+        setFavoriteTrainerIds(
+          (current) => {
+            if (isFavorite) {
+              if (
+                current.includes(
+                  trainerId,
+                )
+              ) {
+                return current
+              }
+
+              return [
+                ...current,
+                trainerId,
+              ]
+            }
+
+            return current.filter(
+              (id) =>
+                id !== trainerId,
+            )
+          },
+        )
+      },
+    )
+  }, [])
+
+
   const locations = useMemo(() => {
     return Array.from(
       new Set(
         trainers
-          .map((trainer) => trainer.location?.trim())
+          .map(
+            (trainer) =>
+              trainer.location?.trim(),
+          )
           .filter(Boolean),
       ),
-    ).sort((a, b) => a!.localeCompare(b!, 'pl')) as string[]
+    ).sort() as string[]
   }, [trainers])
 
-  const specializations = useMemo(() => {
-    return Array.from(
-      new Set(
-        trainers
-          .map((trainer) => trainer.specialization?.trim())
-          .filter(Boolean),
-      ),
-    ).sort((a, b) => a!.localeCompare(b!, 'pl')) as string[]
-  }, [trainers])
+
+  const specializations =
+    useMemo(() => {
+      return Array.from(
+        new Set(
+          trainers
+            .map(
+              (trainer) =>
+                trainer.specialization?.trim(),
+            )
+            .filter(Boolean),
+        ),
+      ).sort() as string[]
+    }, [trainers])
+
 
   const durations = useMemo(() => {
     return Array.from(
       new Set(
         trainers
-          .map((trainer) => trainer.durationMinutes)
+          .map(
+            (trainer) =>
+              trainer.durationMinutes,
+          )
           .filter(
-            (duration): duration is number =>
+            (
+              duration,
+            ): duration is number =>
               duration !== null,
           ),
       ),
-    ).sort((a, b) => a - b)
+    ).sort(
+      (a, b) =>
+        a - b,
+    )
   }, [trainers])
-
   const filteredTrainers = useMemo(() => {
-    const query = searchQuery
-      .trim()
-      .toLocaleLowerCase('pl-PL')
-
-    return trainers.filter((trainer) => {
-      const searchableText = [
-        trainer.user.firstName,
-        trainer.user.lastName,
-        trainer.specialization,
-        trainer.location,
-        trainer.bio,
-      ]
-        .filter(Boolean)
-        .join(' ')
+    const query =
+      searchQuery
+        .trim()
         .toLocaleLowerCase('pl-PL')
 
-      const matchesSearch =
-        !query || searchableText.includes(query)
+    return trainers.filter(
+      (trainer) => {
+        const text = [
+          trainer.user.firstName,
+          trainer.user.lastName,
+          trainer.specialization,
+          trainer.location,
+          trainer.bio,
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLocaleLowerCase('pl-PL')
 
-      const matchesLocation =
-        !selectedLocation ||
-        trainer.location === selectedLocation
 
-      const matchesSpecialization =
-        !selectedSpecialization ||
-        trainer.specialization ===
-          selectedSpecialization
+        const matchesSearch =
+          !query ||
+          text.includes(query)
 
-      const matchesDuration =
-        !selectedDuration ||
-        trainer.durationMinutes ===
-          Number(selectedDuration)
 
-      const trainerPrice =
-        trainer.price !== null
-          ? Number(trainer.price)
-          : null
+        const matchesLocation =
+          !selectedLocation ||
+          trainer.location ===
+            selectedLocation
 
-      const minimumPrice =
-        minPrice !== ''
-          ? Number(minPrice)
-          : null
 
-      const maximumPrice =
-        maxPrice !== ''
-          ? Number(maxPrice)
-          : null
+        const matchesSpecialization =
+          !selectedSpecialization ||
+          trainer.specialization ===
+            selectedSpecialization
 
-      const matchesMinPrice =
-        minimumPrice === null ||
-        (trainerPrice !== null &&
-          trainerPrice >= minimumPrice)
 
-      const matchesMaxPrice =
-        maximumPrice === null ||
-        (trainerPrice !== null &&
-          trainerPrice <= maximumPrice)
+        const matchesDuration =
+          !selectedDuration ||
+          trainer.durationMinutes ===
+            Number(selectedDuration)
 
-      return (
-        matchesSearch &&
-        matchesLocation &&
-        matchesSpecialization &&
-        matchesDuration &&
-        matchesMinPrice &&
-        matchesMaxPrice
-      )
-    })
+
+        const price =
+          trainer.price
+            ? Number(trainer.price)
+            : null
+
+
+        const min =
+          minPrice
+            ? Number(minPrice)
+            : null
+
+
+        const max =
+          maxPrice
+            ? Number(maxPrice)
+            : null
+
+
+        const matchesMin =
+          min === null ||
+          (price !== null &&
+            price >= min)
+
+
+        const matchesMax =
+          max === null ||
+          (price !== null &&
+            price <= max)
+
+
+        return (
+          matchesSearch &&
+          matchesLocation &&
+          matchesSpecialization &&
+          matchesDuration &&
+          matchesMin &&
+          matchesMax
+        )
+      },
+    )
   }, [
     trainers,
     searchQuery,
@@ -166,12 +301,14 @@ function TrainersPage() {
     maxPrice,
   ])
 
+
   const hasActiveFilters =
-    selectedLocation !== '' ||
-    selectedSpecialization !== '' ||
-    selectedDuration !== '' ||
-    minPrice !== '' ||
-    maxPrice !== ''
+    selectedLocation ||
+    selectedSpecialization ||
+    selectedDuration ||
+    minPrice ||
+    maxPrice
+
 
   function clearFilters() {
     setSelectedLocation('')
@@ -180,6 +317,100 @@ function TrainersPage() {
     setMinPrice('')
     setMaxPrice('')
   }
+
+
+  async function toggleFavorite(
+    trainerId: number,
+  ) {
+    const token =
+      localStorage.getItem('token')
+
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+
+    if (favoriteLoadingId !== null) {
+      return
+    }
+
+    setFavoriteLoadingId(trainerId)
+
+    try {
+      const currentResponse = await fetch(
+        'http://localhost:3000/api/me/favorites',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      )
+
+      const currentData =
+        await currentResponse.json()
+
+      const currentlyFavorite =
+        (currentData.favorites ?? []).some(
+          (favorite: {
+            trainer: { id: number }
+          }) =>
+            favorite.trainer.id === trainerId,
+        )
+
+      const response = await fetch(
+        currentlyFavorite
+          ? `http://localhost:3000/api/me/favorites/${trainerId}`
+          : 'http://localhost:3000/api/me/favorites',
+        {
+          method: currentlyFavorite
+            ? 'DELETE'
+            : 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            ...(currentlyFavorite
+              ? {}
+              : {
+                  'Content-Type': 'application/json',
+                }),
+          },
+          ...(currentlyFavorite
+            ? {}
+            : {
+                body: JSON.stringify({
+                  trainerId,
+                }),
+              }),
+        },
+      )
+
+      if (!response.ok) {
+        console.error(
+          'Favorite request failed',
+          response.status,
+          await response.text(),
+        )
+        return
+      }
+
+      setFavoriteTrainerIds((current) =>
+        currentlyFavorite
+          ? current.filter(
+              (id) => id !== trainerId,
+            )
+          : current.includes(trainerId)
+            ? current
+            : [...current, trainerId],
+      )
+
+      notifyFavoritesChanged(
+        trainerId,
+        !currentlyFavorite,
+      )
+    } finally {
+      setFavoriteLoadingId(null)
+    }
+  }
+
 
   if (loading) {
     return (
@@ -191,6 +422,7 @@ function TrainersPage() {
     )
   }
 
+
   if (error) {
     return (
       <main className="trainers-page">
@@ -201,356 +433,248 @@ function TrainersPage() {
     )
   }
 
+
   return (
     <main className="trainers-page">
-      <div className="trainers-page__header">
+      <header className="trainers-page__header">
         <p className="trainers-page__eyebrow">
           PROGREFY TRAINERS
         </p>
 
-        <h1>Znajdź swojego trenera</h1>
+        <h1>
+          Znajdź swojego trenera
+        </h1>
 
         <p className="trainers-page__description">
-          Wybierz trenera dopasowanego do Twoich celów,
-          lokalizacji i preferencji treningowych.
+          Wybierz trenera dopasowanego
+          do swoich celów.
         </p>
-      </div>
+      </header>
+
 
       <section className="trainers-page__controls">
+
         <div className="trainers-page__search">
           <svg
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
-            <circle cx="11" cy="11" r="6.5" />
+            <circle
+              cx="11"
+              cy="11"
+              r="6.5"
+            />
+
             <path d="M16 16l5 5" />
           </svg>
+
 
           <input
             type="search"
             value={searchQuery}
-            onChange={(event) =>
-              setSearchQuery(event.target.value)
+            onChange={(e) =>
+              setSearchQuery(
+                e.target.value,
+              )
             }
-            placeholder="Szukaj trenera, miasta lub specjalizacji"
-            aria-label="Szukaj trenera, miasta lub specjalizacji"
+            placeholder="Szukaj trenera..."
           />
         </div>
 
-        <div className="trainers-page__toolbar">
-          <button
-            type="button"
-            className={`trainers-page__filter-button ${
-              isFiltersOpen ? 'is-active' : ''
-            }`}
-            onClick={() =>
-              setIsFiltersOpen((open) => !open)
-            }
-          >
-            <span>⚙</span>
-            Filtry
 
-            {hasActiveFilters && (
-              <span className="trainers-page__filter-count">
-                {
-                  [
-                    selectedLocation,
-                    selectedSpecialization,
-                    selectedDuration,
-                    minPrice,
-                    maxPrice,
-                  ].filter(Boolean).length
-                }
-              </span>
-            )}
-          </button>
+        <button
+          type="button"
+          className="trainers-page__filter-button"
+          onClick={() =>
+            setIsFiltersOpen(
+              !isFiltersOpen,
+            )
+          }
+        >
+          ⚙ Filtry
+        </button>
 
-          <span className="trainers-page__results-count">
-            {filteredTrainers.length}{' '}
-            {filteredTrainers.length === 1
-              ? 'trener'
-              : 'trenerów'}
-          </span>
-        </div>
 
-        {isFiltersOpen && (
-          <div className="trainers-page__filters">
-            <div className="trainers-page__filters-header">
-              <div>
-                <p>FILTRY</p>
-                <span>
-                  Dopasuj wyniki do swoich preferencji.
-                </span>
-              </div>
+        <span>
+          {filteredTrainers.length}
+          {' '}
+          trenerów
+        </span>
 
-              {hasActiveFilters && (
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  className="trainers-page__clear"
-                >
-                  Wyczyść
-                </button>
-              )}
-            </div>
-
-            <div className="trainers-page__filter-grid">
-              <label className="trainers-page__filter">
-                <span>Lokalizacja</span>
-
-                <select
-                  value={selectedLocation}
-                  onChange={(event) =>
-                    setSelectedLocation(
-                      event.target.value,
-                    )
-                  }
-                >
-                  <option value="">
-                    Wszystkie lokalizacje
-                  </option>
-
-                  {locations.map((location) => (
-                    <option
-                      key={location}
-                      value={location}
-                    >
-                      {location}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="trainers-page__filter">
-                <span>Specjalizacja</span>
-
-                <select
-                  value={selectedSpecialization}
-                  onChange={(event) =>
-                    setSelectedSpecialization(
-                      event.target.value,
-                    )
-                  }
-                >
-                  <option value="">
-                    Wszystkie specjalizacje
-                  </option>
-
-                  {specializations.map(
-                    (specialization) => (
-                      <option
-                        key={specialization}
-                        value={specialization}
-                      >
-                        {specialization}
-                      </option>
-                    ),
-                  )}
-                </select>
-              </label>
-
-              <label className="trainers-page__filter">
-                <span>Czas treningu</span>
-
-                <select
-                  value={selectedDuration}
-                  onChange={(event) =>
-                    setSelectedDuration(
-                      event.target.value,
-                    )
-                  }
-                >
-                  <option value="">
-                    Wszystkie czasy
-                  </option>
-
-                  {durations.map((duration) => (
-                    <option
-                      key={duration}
-                      value={duration}
-                    >
-                      {duration} min
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <div className="trainers-page__filter trainers-page__filter--price">
-                <span>Cena za trening</span>
-
-                <div className="trainers-page__price-fields">
-                  <input
-                    type="number"
-                    min="0"
-                    value={minPrice}
-                    onChange={(event) =>
-                      setMinPrice(event.target.value)
-                    }
-                    placeholder="Od"
-                  />
-
-                  <span>—</span>
-
-                  <input
-                    type="number"
-                    min="0"
-                    value={maxPrice}
-                    onChange={(event) =>
-                      setMaxPrice(event.target.value)
-                    }
-                    placeholder="Do"
-                  />
-
-                  <small>zł</small>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </section>
-
-      {hasActiveFilters && (
-        <div className="trainers-page__active-filters">
-          {selectedLocation && (
-            <button
-              type="button"
-              onClick={() => setSelectedLocation('')}
-            >
-              {selectedLocation}
-              <span>×</span>
-            </button>
-          )}
-
-          {selectedSpecialization && (
-            <button
-              type="button"
-              onClick={() =>
-                setSelectedSpecialization('')
-              }
-            >
-              {selectedSpecialization}
-              <span>×</span>
-            </button>
-          )}
-
-          {selectedDuration && (
-            <button
-              type="button"
-              onClick={() => setSelectedDuration('')}
-            >
-              {selectedDuration} min
-              <span>×</span>
-            </button>
-          )}
-
-          {minPrice && (
-            <button
-              type="button"
-              onClick={() => setMinPrice('')}
-            >
-              od {minPrice} zł
-              <span>×</span>
-            </button>
-          )}
-
-          {maxPrice && (
-            <button
-              type="button"
-              onClick={() => setMaxPrice('')}
-            >
-              do {maxPrice} zł
-              <span>×</span>
-            </button>
-          )}
-        </div>
-      )}
-
       {filteredTrainers.length > 0 ? (
         <div className="trainers-page__grid">
-          {filteredTrainers.map((trainer) => (
-            <article
-              className="trainer-card"
-              key={trainer.id}
-            >
-              <div className="trainer-card__avatar">
-                {trainer.user.avatarUrl ? (
-                  <img
-                    src={trainer.user.avatarUrl}
-                    alt={`${trainer.user.firstName} ${trainer.user.lastName}`}
-                  />
-                ) : (
-                  <span>
-                    {trainer.user.firstName.charAt(0)}
-                    {trainer.user.lastName.charAt(0)}
-                  </span>
-                )}
-              </div>
+          {filteredTrainers.map((trainer) => {
+            const isFavorite =
+              favoriteTrainerIds.includes(
+                trainer.id,
+              )
 
-              <div className="trainer-card__content">
-                <h2>
-                  {trainer.user.firstName}{' '}
-                  {trainer.user.lastName}
-                </h2>
+            const isLoading =
+              favoriteLoadingId === trainer.id
 
-                {trainer.specialization && (
-                  <p className="trainer-card__specialization">
-                    {trainer.specialization}
-                  </p>
-                )}
 
-                {trainer.bio && (
-                  <p className="trainer-card__bio">
-                    {trainer.bio}
-                  </p>
-                )}
+            return (
+              <article
+                className="trainer-card"
+                key={trainer.id}
+              >
 
-                <div className="trainer-card__details">
-                  {trainer.location && (
+                <div className="trainer-card__avatar">
+
+                  {trainer.user.avatarUrl ? (
+                    <img
+                      src={
+                        trainer.user.avatarUrl
+                      }
+                      alt={`${trainer.user.firstName} ${trainer.user.lastName}`}
+                    />
+                  ) : (
                     <span>
-                      {trainer.location}
+                      {
+                        trainer.user.firstName.charAt(
+                          0,
+                        )
+                      }
+
+                      {
+                        trainer.user.lastName.charAt(
+                          0,
+                        )
+                      }
                     </span>
                   )}
 
-                  {trainer.price && (
-                    <span>
-                      {trainer.price} zł / trening
-                    </span>
-                  )}
 
-                  {trainer.durationMinutes && (
-                    <span>
-                      {trainer.durationMinutes} min
-                    </span>
-                  )}
+                  <button
+                    type="button"
+                    className={`trainer-card__favorite ${
+                      isFavorite
+                        ? 'trainer-card__favorite--active'
+                        : ''
+                    }`}
+                    onClick={() =>
+                      toggleFavorite(
+                        trainer.id,
+                      )
+                    }
+                    disabled={isLoading}
+                    aria-label={
+                      isFavorite
+                        ? 'Usuń z ulubionych'
+                        : 'Dodaj do ulubionych'
+                    }
+                  >
+
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M20.8 8.7c0 5.2-8.8 10.2-8.8 10.2S3.2 13.9 3.2 8.7C3.2 5.9 5.1 4 7.7 4c1.7 0 3.3.9 4.3 2.2C13 4.9 14.6 4 16.3 4c2.6 0 4.5 1.9 4.5 4.7Z"
+                        fill={
+                          isFavorite
+                            ? 'white'
+                            : 'none'
+                        }
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+
+                  </button>
+
                 </div>
 
-                <button
-                  className="trainer-card__button"
-                  onClick={() => {
-                    window.location.href =
-                      `/trainers/${trainer.id}`
-                  }}
-                >
-                  Zobacz profil
-                </button>
-              </div>
-            </article>
-          ))}
+
+                <div className="trainer-card__content">
+
+                  <h2>
+                    {trainer.user.firstName}{' '}
+                    {trainer.user.lastName}
+                  </h2>
+
+
+                  {trainer.specialization && (
+                    <p className="trainer-card__specialization">
+                      {
+                        trainer.specialization
+                      }
+                    </p>
+                  )}
+
+
+                  {trainer.bio && (
+                    <p className="trainer-card__bio">
+                      {trainer.bio}
+                    </p>
+                  )}
+
+
+                  <div className="trainer-card__details">
+
+                    {trainer.location && (
+                      <span>
+                        📍 {trainer.location}
+                      </span>
+                    )}
+
+
+                    {trainer.price && (
+                      <span>
+                        💰 {trainer.price} zł
+                      </span>
+                    )}
+
+
+                    {trainer.durationMinutes && (
+                      <span>
+                        ⏱{' '}
+                        {
+                          trainer.durationMinutes
+                        }
+                        min
+                      </span>
+                    )}
+
+                  </div>
+
+
+                  <button
+                    type="button"
+                    className="trainer-card__button"
+                    onClick={() =>
+                      window.location.href =
+                        `/trainers/${trainer.id}`
+                    }
+                  >
+                    Zobacz profil
+                  </button>
+
+                </div>
+
+              </article>
+            )
+          })}
         </div>
       ) : (
-        <div className="trainers-page__empty">
-          <div className="trainers-page__empty-icon">
-            ×
-          </div>
 
-          <h2>Nie znaleziono trenerów</h2>
+        <div className="trainers-page__empty">
+
+          <h2>
+            Nie znaleziono trenerów
+          </h2>
 
           <p>
-            Spróbuj zmienić wyszukiwanie lub
-            wyczyścić wybrane filtry.
+            Spróbuj zmienić filtry lub
+            wyszukiwanie.
           </p>
 
-          {(searchQuery || hasActiveFilters) && (
+
+          {(searchQuery ||
+            hasActiveFilters) && (
             <button
               type="button"
               onClick={() => {
@@ -558,11 +682,14 @@ function TrainersPage() {
                 clearFilters()
               }}
             >
-              Wyczyść wyszukiwanie
+              Wyczyść
             </button>
           )}
+
         </div>
+
       )}
+
     </main>
   )
 }
