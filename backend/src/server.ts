@@ -9,6 +9,7 @@ import { trainerRoutes } from './routes/trainer.routes'
 import { authRoutes } from './routes/auth.routes'
 import { profileRoutes } from './routes/profile.routes'
 import { appointmentRoutes } from './routes/appointment.routes'
+import { accountRoutes } from './routes/account.routes'
 
 const app = Fastify({
   logger: true,
@@ -32,6 +33,7 @@ async function startServer() {
     await app.register(profileRoutes)
 
     await app.register(appointmentRoutes)
+    await app.register(accountRoutes)
 
     await app.register(trainerRoutes)
 

@@ -43,6 +43,7 @@ model User {
   firstName    String
   lastName     String
   phone        String?
+  gender       String?
   role         UserRole
   avatarUrl    String?
 
@@ -51,6 +52,7 @@ model User {
 
   clientProfile  ClientProfile?
   trainerProfile TrainerProfile?
+  favorites      FavoriteTrainer[]
 }
 
 model ClientProfile {
@@ -89,6 +91,20 @@ model TrainerProfile {
   appointments Appointment[]
   reviews      Review[]
   socialLinks  TrainerSocialLink[]
+  favoritedBy  FavoriteTrainer[]
+}
+
+model FavoriteTrainer {
+  id        Int @id @default(autoincrement())
+  userId    Int
+  trainerId Int
+  createdAt DateTime @default(now())
+
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trainer TrainerProfile @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, trainerId])
+  @@index([userId])
 }
 
 model TrainerSocialLink {
