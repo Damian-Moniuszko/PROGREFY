@@ -13,6 +13,8 @@ interface LoginResponse {
     lastName: string
     role: 'CLIENT' | 'TRAINER'
   }
+  code?: string
+  message?: string
 }
 
 function LoginPage() {
@@ -24,6 +26,8 @@ function LoginPage() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [unverifiedEmail, setUnverifiedEmail] =
+    useState('')
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>,
@@ -32,6 +36,7 @@ function LoginPage() {
 
     setLoading(true)
     setError('')
+    setUnverifiedEmail('')
 
     try {
       const response = await fetch(
@@ -48,11 +53,16 @@ function LoginPage() {
         },
       )
 
-      const data: LoginResponse & {
-        message?: string
-      } = await response.json()
+      const data: LoginResponse =
+        await response.json()
 
       if (!response.ok) {
+        if (data.code === 'EMAIL_NOT_VERIFIED') {
+          setUnverifiedEmail(
+            email.trim().toLowerCase(),
+          )
+        }
+
         throw new Error(
           data.message ||
             'Nieprawidłowy email lub hasło.',
@@ -61,7 +71,11 @@ function LoginPage() {
 
       await login(data.token)
 
-      navigate('/')
+      navigate(
+        data.user.role === 'TRAINER'
+          ? '/'
+          : '/',
+      )
     } catch (error) {
       setError(
         error instanceof Error
@@ -100,10 +114,7 @@ function LoginPage() {
           onSubmit={handleSubmit}
         >
           <div className="login-form__field">
-            <label htmlFor="email">
-              Email
-            </label>
-
+            <label htmlFor="email">Email</label>
             <input
               id="email"
               type="email"
@@ -118,10 +129,7 @@ function LoginPage() {
           </div>
 
           <div className="login-form__field">
-            <label htmlFor="password">
-              Hasło
-            </label>
-
+            <label htmlFor="password">Hasło</label>
             <input
               id="password"
               type="password"
@@ -138,6 +146,17 @@ function LoginPage() {
           {error && (
             <div className="login-form__error">
               {error}
+
+              {unverifiedEmail && (
+                <Link
+                  className="login-form__verify-link"
+                  to={`/verify-email?pending=${encodeURIComponent(
+                    unverifiedEmail,
+                  )}`}
+                >
+                  Wyślij ponownie wiadomość weryfikacyjną
+                </Link>
+              )}
             </div>
           )}
 
@@ -154,9 +173,7 @@ function LoginPage() {
 
         <p className="login-card__footer">
           Nie masz jeszcze konta?{' '}
-          <Link to="/register">
-            Załóż konto
-          </Link>
+          <Link to="/register">Załóż konto</Link>
         </p>
       </div>
     </main>

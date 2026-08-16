@@ -611,7 +611,7 @@ function TrainerPage() {
       setBookingSuccess(true)
       setSelectedSlot(null)
 
-      navigate('/dashboard')
+      navigate('/profile/visits')
     } catch (error) {
       setBookingError(
         error instanceof Error

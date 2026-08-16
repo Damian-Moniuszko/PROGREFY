@@ -77,7 +77,7 @@ function ProfilePage() {
               <ArrowIcon />
             </Link>
 
-            <Link className="profile-row" to="/profile/settings">
+            <Link className="profile-row" to="/settings">
               <span>
                 <strong>Ustawienia konta</strong>
                 <small>Dane osobowe i ustawienia konta</small>

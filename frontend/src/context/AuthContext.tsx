@@ -13,6 +13,11 @@ interface User {
   lastName: string
   role: 'CLIENT' | 'TRAINER'
   avatarUrl: string | null
+  phone: string | null
+  gender: string | null
+  birthDate: string | null
+  hasPassword: boolean
+  emailVerified: boolean
 }
 
 interface AuthContextValue {

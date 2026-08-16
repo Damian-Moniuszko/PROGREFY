@@ -177,3 +177,12 @@
     font-size: 36px;
   }
 }
+
+.login-form__verify-link {
+  display: block;
+  margin-top: 10px;
+  color: var(--color-green-light);
+  text-decoration: none;
+}
+
+.login-form__verify-link:hover { text-decoration: underline; }

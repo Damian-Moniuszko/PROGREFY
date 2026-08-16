@@ -1,12 +1,10 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
 import './RegisterPage.css'
 
 function RegisterPage() {
   const navigate = useNavigate()
-  const { login } = useAuth()
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -42,7 +40,11 @@ function RegisterPage() {
         },
       )
 
-      const data = await response.json()
+      const data: {
+        message?: string
+        token?: string
+        user?: unknown
+      } = await response.json()
 
       if (!response.ok) {
         throw new Error(
@@ -50,35 +52,7 @@ function RegisterPage() {
             'Nie udało się utworzyć konta.',
         )
       }
-
-      // Backend rejestracji nie zwraca tokena,
-      // więc po utworzeniu konta logujemy użytkownika.
-      const loginResponse = await fetch(
-        'http://localhost:3000/api/auth/login',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        },
-      )
-
-      const loginData = await loginResponse.json()
-
-      if (!loginResponse.ok) {
-        throw new Error(
-          loginData.message ||
-            'Konto utworzono, ale nie udało się zalogować.',
-        )
-      }
-
-      await login(loginData.token)
-
-      navigate('/dashboard')
+      navigate(`/verify-email?pending=${encodeURIComponent(email)}`)
     } catch (error) {
       setError(
         error instanceof Error
@@ -119,10 +93,7 @@ function RegisterPage() {
         >
           <div className="register-form__row">
             <div className="register-form__field">
-              <label htmlFor="firstName">
-                Imię
-              </label>
-
+              <label htmlFor="firstName">Imię</label>
               <input
                 id="firstName"
                 type="text"
@@ -130,7 +101,7 @@ function RegisterPage() {
                 onChange={(event) =>
                   setFirstName(event.target.value)
                 }
-                placeholder="Damian"
+                placeholder="Imie"
                 autoComplete="given-name"
                 required
               />
@@ -140,7 +111,6 @@ function RegisterPage() {
               <label htmlFor="lastName">
                 Nazwisko
               </label>
-
               <input
                 id="lastName"
                 type="text"
@@ -148,7 +118,7 @@ function RegisterPage() {
                 onChange={(event) =>
                   setLastName(event.target.value)
                 }
-                placeholder="Moniuszko"
+                placeholder="Nazwisko"
                 autoComplete="family-name"
                 required
               />
@@ -156,10 +126,7 @@ function RegisterPage() {
           </div>
 
           <div className="register-form__field">
-            <label htmlFor="email">
-              Email
-            </label>
-
+            <label htmlFor="email">Email</label>
             <input
               id="email"
               type="email"
@@ -174,10 +141,7 @@ function RegisterPage() {
           </div>
 
           <div className="register-form__field">
-            <label htmlFor="password">
-              Hasło
-            </label>
-
+            <label htmlFor="password">Hasło</label>
             <input
               id="password"
               type="password"
@@ -211,9 +175,7 @@ function RegisterPage() {
 
         <p className="register-card__footer">
           Masz już konto?{' '}
-          <Link to="/login">
-            Zaloguj się
-          </Link>
+          <Link to="/login">Zaloguj się</Link>
         </p>
       </div>
     </main>
