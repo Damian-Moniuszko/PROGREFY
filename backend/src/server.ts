@@ -40,7 +40,7 @@ async function startServer() {
     app.get('/api/health', async () => {
       return {
         status: 'ok',
-        message: 'FITBOOK backend is running',
+        message: 'PROGREFY backend is running',
       }
     })
 
