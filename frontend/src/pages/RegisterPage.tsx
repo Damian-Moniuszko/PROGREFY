@@ -14,6 +14,11 @@ function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
+  function handleGoogleRegister() {
+    window.location.href =
+      'http://localhost:3000/api/auth/google'
+  }
+
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>,
   ) {
@@ -170,6 +175,18 @@ function RegisterPage() {
             {loading
               ? 'Tworzenie konta...'
               : 'Utwórz konto'}
+          </button>
+
+          <div className="register-form__divider">
+            lub
+          </div>
+
+          <button
+            type="button"
+            className="register-form__google-button"
+            onClick={handleGoogleRegister}
+          >
+            Kontynuuj z Google
           </button>
         </form>
 

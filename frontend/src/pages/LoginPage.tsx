@@ -29,6 +29,11 @@ function LoginPage() {
   const [unverifiedEmail, setUnverifiedEmail] =
     useState('')
 
+  function handleGoogleLogin() {
+    window.location.href =
+      'http://localhost:3000/api/auth/google'
+  }
+
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>,
   ) {
@@ -168,6 +173,18 @@ function LoginPage() {
             {loading
               ? 'Logowanie...'
               : 'Zaloguj się'}
+          </button>
+
+          <div className="login-form__divider">
+            lub
+          </div>
+
+          <button
+            type="button"
+            className="login-form__google-button"
+            onClick={handleGoogleLogin}
+          >
+            Kontynuuj z Google
           </button>
         </form>
 

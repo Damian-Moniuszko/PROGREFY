@@ -186,3 +186,46 @@
 }
 
 .login-form__verify-link:hover { text-decoration: underline; }
+
+
+.login-form__divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 4px 0;
+
+  color: var(--color-light-gray);
+
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.login-form__google-button {
+  width: 100%;
+
+  padding: 13px 20px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 8px;
+
+  color: var(--color-white);
+  background: #0b0b0b;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.login-form__google-button:hover {
+  border-color: var(--color-green-light);
+  background: #161616;
+  transform: translateY(-1px);
+}

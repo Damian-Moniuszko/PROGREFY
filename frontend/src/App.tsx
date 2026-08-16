@@ -18,6 +18,7 @@ import ProfileSectionPage from './pages/ProfileSectionPage'
 import TermsPage from './pages/TermsPage'
 import ReportPage from './pages/ReportPage'
 import SettingsPage from './pages/SettingsPage'
+import GoogleCallbackPage from './pages/GoogleCallbackPage'
 
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -36,42 +37,58 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         <Route element={<PublicLayout />}>
           <Route path="/" element={<LandingPage />} />
+
           <Route
             path="/trainers"
             element={<TrainersPage />}
           />
+
           <Route
             path="/trainers/:id"
             element={<TrainerPage />}
           />
+
           <Route
             path="/trainers/:id/report"
             element={<ReportPage />}
           />
+
           <Route
             path="/regulamin"
             element={<TermsPage />}
           />
         </Route>
 
+
         <Route
           path="/login"
           element={<LoginPage />}
         />
+
         <Route
           path="/register"
           element={<RegisterPage />}
         />
+
         <Route
           path="/email-verification"
           element={<EmailVerificationPage />}
         />
+
         <Route
           path="/verify-email"
           element={<EmailVerificationPage />}
         />
+
+
+        <Route
+          path="/auth/google/callback"
+          element={<GoogleCallbackPage />}
+        />
+
 
         <Route
           path="/dashboard"
@@ -83,18 +100,23 @@ function App() {
           element={<TrainerDashboardPage />}
         />
 
+
         <Route
           path="/profile"
           element={<ProfilePage />}
         />
+
         <Route
           path="/profile/:section"
           element={<ProfileSectionPage />}
         />
 
-        <Route 
-          path="/settings" 
-          element={<SettingsPage />} />
+
+        <Route
+          path="/settings"
+          element={<SettingsPage />}
+        />
+
       </Routes>
     </BrowserRouter>
   )
