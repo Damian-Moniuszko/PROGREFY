@@ -253,6 +253,12 @@ export async function accountRoutes(app: FastifyInstance) {
         })
       }
 
+      if (!user.passwordHash) {
+        return reply.status(400).send({
+          message: 'To konto nie posiada hasła. Zalogowano przez Google.',
+        })
+      }
+
       const passwordMatches = await argon2.verify(
         user.passwordHash,
         currentPassword,

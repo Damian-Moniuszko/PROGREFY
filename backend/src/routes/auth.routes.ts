@@ -6,6 +6,7 @@ import {
   verifyEmail,
 } from '../services/auth.service'
 import { sendVerificationEmail } from '../services/email.service'
+import { getGoogleAuthUrl, getGoogleUser } from '../services/google.service'
 
 interface RegisterBody {
   email: string
@@ -183,7 +184,83 @@ export async function authRoutes(app: FastifyInstance) {
     },
   )
 
-    app.get('/api/me', async (request, reply) => {
+  
+  app.get('/api/auth/google', async (_request, reply) => {
+    const url = getGoogleAuthUrl()
+
+    return reply.redirect(url)
+  })
+
+  app.get('/api/auth/google/callback', async (request, reply) => {
+    const { code } = request.query as { code?: string }
+
+    if (!code) {
+      return reply.status(400).send({
+        message: 'Brak kodu Google OAuth.',
+      })
+    }
+
+    try {
+      const googleUser = await getGoogleUser(code)
+
+      let user = await app.prisma.user.findUnique({
+        where: {
+          email: googleUser.email,
+        },
+      })
+
+      if (!user) {
+        user = await app.prisma.user.create({
+          data: {
+            email: googleUser.email,
+            passwordHash: null,
+            hasPassword: false,
+            emailVerified: true,
+            firstName: googleUser.firstName || 'User',
+            lastName: googleUser.lastName || '',
+            avatarUrl: googleUser.avatarUrl,
+            role: UserRole.CLIENT,
+          },
+        })
+      }
+
+      const account = await app.prisma.oAuthAccount.findUnique({
+        where: {
+          provider_providerAccountId: {
+            provider: 'google',
+            providerAccountId: googleUser.googleId,
+          },
+        },
+      })
+
+      if (!account) {
+        await app.prisma.oAuthAccount.create({
+          data: {
+            provider: 'google',
+            providerAccountId: googleUser.googleId,
+            userId: user.id,
+          },
+        })
+      }
+
+      const token = await app.jwt.sign({
+        userId: user.id,
+        role: user.role,
+      })
+
+      return reply.redirect(
+        `${process.env.FRONTEND_URL ?? 'http://localhost:5173'}/auth/google/callback?token=${token}`,
+      )
+    } catch (error) {
+      request.log.error(error)
+
+      return reply.status(500).send({
+        message: 'Nie udało się zalogować przez Google.',
+      })
+    }
+  })
+
+  app.get('/api/me', async (request, reply) => {
     try {
       const decoded = await request.jwtVerify<{
         userId: number

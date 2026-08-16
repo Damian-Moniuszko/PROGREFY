@@ -97,6 +97,10 @@ export async function loginUser(
     throw new Error('INVALID_CREDENTIALS')
   }
 
+  if (!user.passwordHash) {
+    throw new Error('INVALID_CREDENTIALS')
+  }
+
   const passwordValid = await argon2.verify(
     user.passwordHash,
     password,
