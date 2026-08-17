@@ -678,4 +678,74 @@ export async function profileRoutes(
       }
     },
   )
+
+  // GET - opinie wystawione przez zalogowanego klienta
+  app.get(
+    '/api/me/reviews',
+    async (request, reply) => {
+      try {
+        const decoded = await request.jwtVerify<{
+          userId: number
+          role: 'CLIENT' | 'TRAINER'
+        }>()
+
+        if (decoded.role !== UserRole.CLIENT) {
+          return reply.status(403).send({
+            message: 'Only clients can access reviews',
+          })
+        }
+
+        const clientProfile =
+          await app.prisma.clientProfile.findUnique({
+            where: {
+              userId: decoded.userId,
+            },
+          })
+
+        if (!clientProfile) {
+          return reply.status(404).send({
+            message: 'Client profile not found',
+          })
+        }
+
+        const reviews =
+          await app.prisma.review.findMany({
+            where: {
+              clientId: clientProfile.id,
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+            select: {
+              id: true,
+              rating: true,
+              comment: true,
+              createdAt: true,
+              trainer: {
+                select: {
+                  user: {
+                    select: {
+                      firstName: true,
+                      lastName: true,
+                      avatarUrl: true,
+                    },
+                  },
+                },
+              },
+            },
+          })
+
+        return {
+          reviews,
+        }
+      } catch (error) {
+        request.log.error(error)
+
+        return reply.status(401).send({
+          message: 'Unauthorized',
+        })
+      }
+    },
+  )
+
 }

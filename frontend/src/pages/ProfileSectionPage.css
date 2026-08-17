@@ -842,3 +842,85 @@
     display: none;
   }
 }
+
+.profile-reviews {
+  margin-top: 48px;
+  display: grid;
+  gap: 18px;
+}
+
+.profile-review-card {
+  padding: 24px;
+  border: 1px solid #222;
+  border-radius: 16px;
+  background: #111;
+}
+
+.profile-review-card__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.profile-review-card h3 {
+  margin: 0;
+}
+
+.profile-review-card span {
+  color: #69d49b;
+  letter-spacing: 3px;
+}
+
+.profile-review-card p {
+  color: #aaa;
+  margin: 18px 0;
+}
+
+.profile-review-card small {
+  color: #666;
+}
+
+.profile-reviews__empty {
+  margin-top: 40px;
+  color: #999;
+}
+
+.profile-review-card__trainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-review-card__avatar {
+  width: 58px;
+  height: 58px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+
+  background: #171717;
+  border: 1px solid #303030;
+
+  color: #5cc18d;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.profile-review-card__avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.profile-review-card__top h3 {
+  margin: 0;
+}

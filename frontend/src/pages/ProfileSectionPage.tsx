@@ -45,6 +45,20 @@ interface Appointment {
   }
 }
 
+interface Review {
+  id: number
+  rating: number
+  comment: string | null
+  createdAt: string
+  trainer: {
+    user: {
+      firstName: string
+      lastName: string
+      avatarUrl: string | null
+    }
+  }
+}
+
 interface FavoriteTrainer {
   id: number
   createdAt: string
@@ -370,6 +384,111 @@ function FavoriteCard({
         <HeartIcon filled />
       </button>
     </article>
+  )
+}
+
+
+function ReviewsSection() {
+  const { token } = useAuth()
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchReviews() {
+      if (!token) {
+        setLoading(false)
+        return
+      }
+
+      try {
+        const response = await fetch(
+          'http://localhost:3000/api/me/reviews',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        )
+
+        const data = await response.json()
+        setReviews(data.reviews ?? [])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchReviews()
+  }, [token])
+
+  return (
+    <main className="profile-section-page">
+      <div className="profile-section-page__container">
+        <Link to="/profile" className="profile-section-page__back">
+          ← Profil
+        </Link>
+
+        <p className="profile-section-page__eyebrow">PROFIL</p>
+        <h1>Opinie</h1>
+        <p className="profile-section-page__description">
+          Tutaj znajdziesz opinie i oceny wystawione przez Ciebie.
+        </p>
+
+        {loading ? (
+          <p className="profile-reviews__empty">Ładowanie...</p>
+        ) : reviews.length === 0 ? (
+          <div className="profile-reviews__empty">
+            Brak wystawionych opinii.
+          </div>
+        ) : (
+          <div className="profile-reviews">
+            {reviews.map((review) => {
+              const name =
+                `${review.trainer.user.firstName} ${review.trainer.user.lastName}`
+
+              return (
+                <article key={review.id} className="profile-review-card">
+                  <div className="profile-review-card__top">
+
+                    <div className="profile-review-card__trainer">
+
+                      <div className="profile-review-card__avatar">
+                        {review.trainer.user.avatarUrl ? (
+                          <img
+                            src={review.trainer.user.avatarUrl}
+                            alt={name}
+                          />
+                        ) : (
+                          getInitials(
+                            review.trainer.user.firstName,
+                            review.trainer.user.lastName,
+                          )
+                        )}
+                      </div>
+
+                      <h3>{name}</h3>
+
+                    </div>
+
+                    <span>
+                      {'★'.repeat(review.rating)}
+                    </span>
+
+                  </div>
+
+                  {review.comment && (
+                    <p>{review.comment}</p>
+                  )}
+
+                  <small>
+                    {formatDate(review.createdAt)}
+                  </small>
+                </article>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </main>
   )
 }
 
@@ -1111,6 +1230,10 @@ function ProfileSectionPage() {
 
   if (key === 'visits') {
     return <VisitsSection />
+  }
+
+  if (key === 'reviews') {
+    return <ReviewsSection />
   }
 
   if (key === 'favorites') {
