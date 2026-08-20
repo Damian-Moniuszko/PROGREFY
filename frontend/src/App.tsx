@@ -20,10 +20,10 @@ import ReportPage from './pages/ReportPage'
 import SettingsPage from './pages/SettingsPage'
 import GoogleCallbackPage from './pages/GoogleCallbackPage'
 
-import TrainingCenterPage from './pages/TrainingCenterPage'
-import TrainingPlanPage from './pages/TrainingPlanPage'
-import TrainingProgressPage from './pages/TrainingProgressPage'
-import WorkoutSessionPage from './pages/WorkoutSessionPage'
+import TrainingCenterPage from './features/training/pages/TrainingCenterPage'
+import TrainingPlanPage from './features/training/pages/TrainingPlanPage'
+import TrainingProgressPage from './features/training/pages/TrainingProgressPage'
+import WorkoutSessionPage from './features/training/pages/WorkoutSessionPage'
 
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -42,131 +42,34 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* =====================================
-            PUBLIC LAYOUT
-        ===================================== */}
-
         <Route element={<PublicLayout />}>
-
-          <Route
-            path="/"
-            element={<LandingPage />}
-          />
-
-          <Route
-            path="/trainers"
-            element={<TrainersPage />}
-          />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/trainers" element={<TrainersPage />} />
 
           <Route path="/training-center">
-          <Route
-            index
-            element={<TrainingCenterPage />}
-          />
-          <Route
-            path="plan"
-            element={<TrainingPlanPage />}
-          />
-          <Route
-            path="progress"
-            element={<TrainingProgressPage />}
-          />
-          <Route
-            path="workout/:id"
-            element={<WorkoutSessionPage />}
-          />
+            <Route index element={<TrainingCenterPage />} />
+            <Route path="plan" element={<TrainingPlanPage />} />
+            <Route path="progress" element={<TrainingProgressPage />} />
+            <Route path="workout/:id" element={<WorkoutSessionPage />} />
+          </Route>
+
+          <Route path="/trainers/:id" element={<TrainerPage />} />
+          <Route path="/trainers/:id/report" element={<ReportPage />} />
+          <Route path="/regulamin" element={<TermsPage />} />
         </Route>
 
-          <Route
-            path="/trainers/:id"
-            element={<TrainerPage />}
-          />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/email-verification" element={<EmailVerificationPage />} />
+        <Route path="/verify-email" element={<EmailVerificationPage />} />
+        <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
 
-          <Route
-            path="/trainers/:id/report"
-            element={<ReportPage />}
-          />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/trainer/dashboard" element={<TrainerDashboardPage />} />
 
-          <Route
-            path="/regulamin"
-            element={<TermsPage />}
-          />
-
-        </Route>
-
-        {/* =====================================
-            AUTH
-        ===================================== */}
-
-        <Route
-          path="/login"
-          element={<LoginPage />}
-        />
-
-        <Route
-          path="/register"
-          element={<RegisterPage />}
-        />
-
-        <Route
-          path="/email-verification"
-          element={<EmailVerificationPage />}
-        />
-
-        <Route
-          path="/verify-email"
-          element={<EmailVerificationPage />}
-        />
-
-        <Route
-          path="/auth/google/callback"
-          element={<GoogleCallbackPage />}
-        />
-
-        {/* =====================================
-            DASHBOARD
-        ===================================== */}
-
-        <Route
-          path="/dashboard"
-          element={<DashboardPage />}
-        />
-
-        {/* Training Center routes are declared inside PublicLayout above. */}
-
-        {/* =====================================
-            TRAINER
-        ===================================== */}
-
-        <Route
-          path="/trainer/dashboard"
-          element={<TrainerDashboardPage />}
-        />
-
-        {/* =====================================
-            PROFILE
-        ===================================== */}
-
-        <Route
-          path="/profile"
-          element={<ProfilePage />}
-        />
-
-        <Route
-          path="/profile/:section"
-          element={<ProfileSectionPage />}
-        />
-
-        {/* =====================================
-            SETTINGS
-        ===================================== */}
-
-        <Route
-          path="/settings"
-          element={<SettingsPage />}
-        />
-
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/:section" element={<ProfileSectionPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </BrowserRouter>
   )
