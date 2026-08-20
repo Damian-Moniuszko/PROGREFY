@@ -12,6 +12,7 @@ import {
   subscribeToFavoritesChanged,
 } from '../utils/favoriteSync'
 import './ProfileSectionPage.css'
+import PaymentsSection from '../components/profile/PaymentsSection'
 
 interface Appointment {
   id: number
@@ -24,6 +25,7 @@ interface Appointment {
     id: number
     amount: string
     status: string
+    method: string
     provider: string
     providerPaymentId: string | null
   } | null
@@ -152,6 +154,25 @@ function getInitials(
   return `${firstName.charAt(0)}${lastName.charAt(
     0,
   )}`
+}
+
+function getPaymentMethodLabel(method?: string) {
+  switch (method) {
+    case 'CARD':
+      return '💳 Karta'
+
+    case 'APPLE_PAY':
+      return ' Apple Pay'
+
+    case 'GOOGLE_PAY':
+      return 'Google Pay'
+
+    case 'CASH':
+      return '💵 Gotówka u trenera'
+
+    default:
+      return 'Brak danych'
+  }
 }
 
 function getStatusClass(status: string) {
@@ -294,6 +315,16 @@ function AppointmentCard({
           <strong>
             {formatPrice(
               appointment.price,
+            )}
+          </strong>
+        </div>
+
+        <div className="profile-appointment__detail">
+          <span>PŁATNOŚĆ</span>
+
+          <strong>
+            {getPaymentMethodLabel(
+              appointment.payment?.method,
             )}
           </strong>
         </div>
@@ -1238,6 +1269,10 @@ function ProfileSectionPage() {
 
   if (key === 'favorites') {
     return <FavoritesSection />
+  }
+
+  if (key === 'payments') {
+    return <PaymentsSection />
   }
 
   const section =

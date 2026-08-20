@@ -29,6 +29,27 @@ interface Appointment {
   }
 }
 
+interface TrainingPlan {
+  id: number
+  name: string
+  description: string | null
+  durationWeeks: number | null
+  workouts: {
+    id: number
+    name: string
+    dayOfWeek: string | null
+    exercises: {
+      id: number
+      sets: number
+      reps: string
+      exercise: {
+        name: string
+        muscleGroup: string | null
+      }
+    }[]
+  }[]
+}
+
 function DashboardPage() {
   const navigate = useNavigate()
 
@@ -41,6 +62,9 @@ function DashboardPage() {
 
   const [appointments, setAppointments] =
     useState<Appointment[]>([])
+
+  const [trainingPlan, setTrainingPlan] =
+    useState<TrainingPlan | null>(null)
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -96,6 +120,28 @@ function DashboardPage() {
         const data = await response.json()
 
         setAppointments(data.appointments)
+
+
+        const planResponse = await fetch(
+          "http://localhost:3000/api/training/dashboard",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        )
+
+
+        if (planResponse.ok) {
+
+          const planData = await planResponse.json()
+
+          setTrainingPlan(
+            planData.currentPlan
+          )
+
+        }
+
       } catch (error) {
         setError(
           error instanceof Error
@@ -704,6 +750,85 @@ function DashboardPage() {
             </div>
           )}
         </section>
+
+        <section className="dashboard-section">
+
+          <div className="dashboard-section__header">
+
+          <div>
+
+          <p className="dashboard__eyebrow">
+          PLAN TRENINGOWY
+          </p>
+
+          <h2>
+          Twój aktualny plan
+          </h2>
+
+          </div>
+
+          </div>
+
+
+          {
+          trainingPlan ? (
+
+          <div className="dashboard-empty">
+
+
+          <h3>
+          {trainingPlan.name}
+          </h3>
+
+
+          <p>
+          {
+          trainingPlan.description
+          }
+          </p>
+
+
+          <p>
+          {
+          trainingPlan.workouts.length
+          }
+          treningów w planie
+          </p>
+
+
+          <button
+          onClick={() =>
+          navigate("/training-plan")
+          }
+          >
+          Otwórz plan
+          </button>
+
+
+          </div>
+
+
+          ) : (
+
+          <div className="dashboard-empty">
+
+          <h3>
+          Brak planu treningowego
+          </h3>
+
+
+          <p>
+          Twój trener jeszcze nie przypisał planu.
+          </p>
+
+
+          </div>
+
+          )
+
+          }
+
+          </section>
       </div>
     </main>
   )

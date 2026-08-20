@@ -36,13 +36,20 @@ enum PaymentStatus {
   REFUNDED
 }
 
-model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  passwordHash String?
-  hasPassword  Boolean  @default(true)
+enum PaymentMethod {
+  CARD
+  APPLE_PAY
+  GOOGLE_PAY
+  CASH
+}
 
-  emailVerified Boolean @default(true)
+model User {
+  id           Int     @id @default(autoincrement())
+  email        String  @unique
+  passwordHash String?
+  hasPassword  Boolean @default(true)
+
+  emailVerified              Boolean   @default(true)
   emailVerificationTokenHash String?
   emailVerificationExpiresAt DateTime?
 
@@ -73,7 +80,7 @@ model OAuthAccount {
 
   userId Int
 
-  provider String
+  provider          String
   providerAccountId String
 
   createdAt DateTime @default(now())
@@ -98,23 +105,26 @@ model ClientProfile {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   appointments Appointment[]
-  reviews Review[]
+  reviews      Review[]
+
+  workoutPlans    WorkoutPlan[]
+  workoutSessions WorkoutSession[]
 }
 
 model TrainerProfile {
   id     Int @id @default(autoincrement())
   userId Int @unique
 
-  bio String?
+  bio            String?
   specialization String?
 
-  price Decimal? @db.Decimal(10,2)
+  price Decimal? @db.Decimal(10, 2)
 
   durationMinutes Int?
 
   location String?
 
-  paymentPolicy String?
+  paymentPolicy      String?
   cancellationPolicy String?
 
   createdAt DateTime @default(now())
@@ -131,12 +141,14 @@ model TrainerProfile {
   socialLinks TrainerSocialLink[]
 
   favoritedBy FavoriteTrainer[]
+
+  workoutPlans WorkoutPlan[]
 }
 
 model FavoriteTrainer {
   id Int @id @default(autoincrement())
 
-  userId Int
+  userId    Int
   trainerId Int
 
   createdAt DateTime @default(now())
@@ -155,7 +167,7 @@ model TrainerSocialLink {
   trainerId Int
 
   platform String
-  url String
+  url      String
 
   trainer TrainerProfile @relation(fields: [trainerId], references: [id], onDelete: Cascade)
 
@@ -170,7 +182,7 @@ model Availability {
   dayOfWeek DayOfWeek
 
   startTime String
-  endTime String
+  endTime   String
 
   trainer TrainerProfile @relation(fields: [trainerId], references: [id], onDelete: Cascade)
 
@@ -183,13 +195,13 @@ model Availability {
 model Appointment {
   id Int @id @default(autoincrement())
 
-  clientId Int
+  clientId  Int
   trainerId Int
 
   startAt DateTime
-  endAt DateTime
+  endAt   DateTime
 
-  price Decimal @db.Decimal(10,2)
+  price Decimal @db.Decimal(10, 2)
 
   status AppointmentStatus @default(PENDING)
 
@@ -204,19 +216,19 @@ model Appointment {
 
   review Review?
 
-  @@index([clientId,startAt])
-  @@index([trainerId,startAt])
+  @@index([clientId, startAt])
+  @@index([trainerId, startAt])
 }
 
 model Review {
   id Int @id @default(autoincrement())
 
   trainerId Int
-  clientId Int
+  clientId  Int
 
   appointmentId Int @unique
 
-  rating Int
+  rating  Int
   comment String?
 
   createdAt DateTime @default(now())
@@ -228,7 +240,7 @@ model Review {
 
   appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
 
-  @@index([trainerId,createdAt])
+  @@index([trainerId, createdAt])
 }
 
 model Payment {
@@ -236,9 +248,11 @@ model Payment {
 
   appointmentId Int @unique
 
-  amount Decimal @db.Decimal(10,2)
+  amount Decimal @db.Decimal(10, 2)
 
   status PaymentStatus @default(PENDING)
+
+  method PaymentMethod @default(CARD)
 
   provider String @default("TEST")
 
@@ -250,4 +264,105 @@ model Payment {
   appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
 
   @@index([status])
+}
+
+model WorkoutPlan {
+  id Int @id @default(autoincrement())
+
+  clientId  Int
+  trainerId Int?
+
+  name        String
+  description String?
+
+  durationWeeks Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  client ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  trainer TrainerProfile? @relation(fields: [trainerId], references: [id])
+
+  workouts Workout[]
+
+  @@index([clientId])
+}
+
+model Workout {
+  id Int @id @default(autoincrement())
+
+  planId Int
+
+  name      String
+  dayOfWeek DayOfWeek?
+
+  order Int @default(0)
+
+  plan WorkoutPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  exercises       WorkoutExercise[]
+  workoutSessions WorkoutSession[]
+}
+
+model Exercise {
+  id Int @id @default(autoincrement())
+
+  name String
+
+  muscleGroup String?
+
+  description String?
+
+  workouts     WorkoutExercise[]
+  exerciseSets ExerciseSet[]
+}
+
+model WorkoutExercise {
+  id Int @id @default(autoincrement())
+
+  workoutId  Int
+  exerciseId Int
+
+  sets Int
+  reps String
+
+  order Int @default(0)
+
+  workout Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model WorkoutSession {
+  id Int @id @default(autoincrement())
+
+  clientId  Int
+  workoutId Int?
+
+  startedAt  DateTime
+  finishedAt DateTime?
+
+  notes String?
+
+  client ClientProfile @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  workout Workout? @relation(fields: [workoutId], references: [id])
+
+  sets ExerciseSet[]
+}
+
+model ExerciseSet {
+  id Int @id @default(autoincrement())
+
+  sessionId  Int
+  exerciseId Int
+
+  weight    Float
+  reps      Int
+  setNumber Int
+
+  session WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
 }

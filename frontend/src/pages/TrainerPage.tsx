@@ -163,6 +163,10 @@ function TrainerPage() {
   const [selectedSlot, setSelectedSlot] =
     useState<Slot | null>(null)
 
+  const [paymentMethod, setPaymentMethod] = useState<
+    'CARD' | 'APPLE_PAY' | 'GOOGLE_PAY' | 'CASH'
+  >('CARD');
+
   const [loading, setLoading] = useState(true)
 
   const [slotsLoading, setSlotsLoading] =
@@ -591,6 +595,7 @@ function TrainerPage() {
             trainerId: trainer.id,
             startAt,
             endAt,
+            paymentMethod,
           }),
         },
       )
@@ -1282,8 +1287,82 @@ function TrainerPage() {
                   </p>
                 </div>
 
+                <div className="payment-method-selector">
+                  <span className="booking-summary__label">
+                    METODA PŁATNOŚCI
+                  </span>
+
+                  <label
+                    className={`payment-option ${
+                      paymentMethod === 'CARD'
+                        ? 'payment-option--active'
+                        : ''
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      checked={paymentMethod === 'CARD'}
+                      onChange={() =>
+                        setPaymentMethod('CARD')
+                      }
+                    />
+                    <span>💳 Karta</span>
+                  </label>
+
+                  <label
+                    className={`payment-option ${
+                      paymentMethod === 'APPLE_PAY'
+                        ? 'payment-option--active'
+                        : ''
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      checked={paymentMethod === 'APPLE_PAY'}
+                      onChange={() =>
+                        setPaymentMethod('APPLE_PAY')
+                      }
+                    />
+                    <span> Apple Pay</span>
+                  </label>
+
+                  <label
+                    className={`payment-option ${
+                      paymentMethod === 'GOOGLE_PAY'
+                        ? 'payment-option--active'
+                        : ''
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      checked={paymentMethod === 'GOOGLE_PAY'}
+                      onChange={() =>
+                        setPaymentMethod('GOOGLE_PAY')
+                      }
+                    />
+                    <span>Google Pay</span>
+                  </label>
+
+                  <label
+                    className={`payment-option ${
+                      paymentMethod === 'CASH'
+                        ? 'payment-option--active'
+                        : ''
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      checked={paymentMethod === 'CASH'}
+                      onChange={() =>
+                        setPaymentMethod('CASH')
+                      }
+                    />
+                    <span>💵 Gotówka u trenera</span>
+                  </label>
+                </div>
+
                 <div className="booking-summary__checkout">
-                  <div>
+                  <div className="booking-price">
                     <strong>
                       {formatPrice(
                         trainer.price,

@@ -20,6 +20,11 @@ import ReportPage from './pages/ReportPage'
 import SettingsPage from './pages/SettingsPage'
 import GoogleCallbackPage from './pages/GoogleCallbackPage'
 
+import TrainingCenterPage from './pages/TrainingCenterPage'
+import TrainingPlanPage from './pages/TrainingPlanPage'
+import TrainingProgressPage from './pages/TrainingProgressPage'
+import WorkoutSessionPage from './pages/WorkoutSessionPage'
+
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 
@@ -38,13 +43,40 @@ function App() {
     <BrowserRouter>
       <Routes>
 
+        {/* =====================================
+            PUBLIC LAYOUT
+        ===================================== */}
+
         <Route element={<PublicLayout />}>
-          <Route path="/" element={<LandingPage />} />
+
+          <Route
+            path="/"
+            element={<LandingPage />}
+          />
 
           <Route
             path="/trainers"
             element={<TrainersPage />}
           />
+
+          <Route path="/training-center">
+          <Route
+            index
+            element={<TrainingCenterPage />}
+          />
+          <Route
+            path="plan"
+            element={<TrainingPlanPage />}
+          />
+          <Route
+            path="progress"
+            element={<TrainingProgressPage />}
+          />
+          <Route
+            path="workout/:id"
+            element={<WorkoutSessionPage />}
+          />
+        </Route>
 
           <Route
             path="/trainers/:id"
@@ -60,8 +92,12 @@ function App() {
             path="/regulamin"
             element={<TermsPage />}
           />
+
         </Route>
 
+        {/* =====================================
+            AUTH
+        ===================================== */}
 
         <Route
           path="/login"
@@ -83,23 +119,34 @@ function App() {
           element={<EmailVerificationPage />}
         />
 
-
         <Route
           path="/auth/google/callback"
           element={<GoogleCallbackPage />}
         />
 
+        {/* =====================================
+            DASHBOARD
+        ===================================== */}
 
         <Route
           path="/dashboard"
           element={<DashboardPage />}
         />
 
+        {/* Training Center routes are declared inside PublicLayout above. */}
+
+        {/* =====================================
+            TRAINER
+        ===================================== */}
+
         <Route
           path="/trainer/dashboard"
           element={<TrainerDashboardPage />}
         />
 
+        {/* =====================================
+            PROFILE
+        ===================================== */}
 
         <Route
           path="/profile"
@@ -111,6 +158,9 @@ function App() {
           element={<ProfileSectionPage />}
         />
 
+        {/* =====================================
+            SETTINGS
+        ===================================== */}
 
         <Route
           path="/settings"

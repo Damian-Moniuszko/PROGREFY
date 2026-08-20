@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import {
   AppointmentStatus,
+  PaymentMethod,
   PaymentStatus,
   UserRole,
 } from '../generated/prisma/client'
@@ -9,6 +10,7 @@ interface CreateAppointmentBody {
   trainerId: number
   startAt: string
   endAt: string
+  paymentMethod?: PaymentMethod
 }
 
 interface UpdateAppointmentStatusBody {
@@ -51,12 +53,23 @@ export async function appointmentRoutes(
           trainerId,
           startAt,
           endAt,
+          paymentMethod = PaymentMethod.CARD,
         } = request.body
 
         if (!trainerId || !startAt || !endAt) {
           return reply.status(400).send({
             message:
               'trainerId, startAt and endAt are required',
+          })
+        }
+
+        if (
+          !Object.values(PaymentMethod).includes(
+            paymentMethod,
+          )
+        ) {
+          return reply.status(400).send({
+            message: 'Invalid payment method',
           })
         }
 
@@ -189,6 +202,7 @@ export async function appointmentRoutes(
                     amount: trainerPrice,
                     status:
                       PaymentStatus.PENDING,
+                    method: paymentMethod,
                     provider: 'TEST',
                   },
                 })
@@ -273,6 +287,7 @@ export async function appointmentRoutes(
                   id: true,
                   amount: true,
                   status: true,
+                  method: true,
                   provider: true,
                   providerPaymentId: true,
                 },
@@ -524,6 +539,7 @@ export async function appointmentRoutes(
                   id: true,
                   amount: true,
                   status: true,
+                  method: true,
                   provider: true,
                 },
               },

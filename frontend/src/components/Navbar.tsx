@@ -285,6 +285,13 @@ function Navbar() {
             Trenerzy
           </Link>
 
+          <Link
+            to="/training-center"
+            className="navbar__link"
+          >
+            Centrum treningowe
+          </Link>
+
           <a
             href="/#how-it-works"
             className="navbar__link"
@@ -408,6 +415,13 @@ function Navbar() {
             onClick={closeMenu}
           >
             Trenerzy
+          </Link>
+
+          <Link
+            to="/training-center"
+            onClick={closeMenu}
+          >
+            Centrum treningowe
           </Link>
 
           <a
