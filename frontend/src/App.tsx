@@ -33,6 +33,8 @@ import BookingPage from './features/appointments/pages/BookingPage'
 import TrainerAppointmentsPage from './features/appointments/pages/TrainerAppointmentsPage'
 import TrainerAvailabilityPage from './features/appointments/pages/TrainerAvailabilityPage'
 
+import CheckoutPage from './features/payments/pages/CheckoutPage'
+
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 
@@ -79,6 +81,7 @@ function App() {
         <Route path="/trainer/availability" element={<TrainerAvailabilityPage trainerId="" />} />
 
         <Route path="/booking/:trainerId" element={<BookingPage trainerId="" slots={[]} />} />
+        <Route path="/checkout/:appointmentId" element={<CheckoutPage appointmentId="" trainerName="" date="" price={0} currency="PLN" />} />
 
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/:section" element={<ProfileSectionPage />} />
