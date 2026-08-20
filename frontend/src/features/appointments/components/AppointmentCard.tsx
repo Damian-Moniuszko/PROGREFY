@@ -1,3 +1,5 @@
+import AppointmentActions from "./AppointmentActions";
+
 interface Appointment {
   id: string;
   date: string;
@@ -10,6 +12,8 @@ interface Appointment {
 interface Props {
   appointment: Appointment;
   onCancel?: (id: string) => void;
+  onConfirm?: (id: string) => void;
+  onComplete?: (id: string) => void;
 }
 
 const statusLabels = {
@@ -19,7 +23,12 @@ const statusLabels = {
   cancelled: "Anulowana",
 };
 
-export default function AppointmentCard({ appointment, onCancel }: Props) {
+export default function AppointmentCard({
+  appointment,
+  onCancel,
+  onConfirm,
+  onComplete,
+}: Props) {
   return (
     <article className="appointment-card">
       <header>
@@ -32,11 +41,12 @@ export default function AppointmentCard({ appointment, onCancel }: Props) {
 
       <p>Status: {statusLabels[appointment.status]}</p>
 
-      {appointment.status !== "cancelled" && onCancel && (
-        <button type="button" onClick={() => onCancel(appointment.id)}>
-          Anuluj
-        </button>
-      )}
+      <AppointmentActions
+        status={appointment.status}
+        onConfirm={() => onConfirm?.(appointment.id)}
+        onComplete={() => onComplete?.(appointment.id)}
+        onCancel={() => onCancel?.(appointment.id)}
+      />
     </article>
   );
 }
