@@ -1,9 +1,16 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
+export type NotificationType =
+  | "booking"
+  | "payment"
+  | "training"
+  | "system";
+
 export interface Notification {
   id: string;
   title: string;
   message: string;
+  type: NotificationType;
   read: boolean;
   createdAt: string;
 }
@@ -24,12 +31,12 @@ export async function getNotifications(
   return response.json();
 }
 
-export async function markAsRead(
-  id: string,
+export async function markNotificationAsRead(
+  notificationId: string,
   token: string,
-) {
+): Promise<Notification> {
   const response = await fetch(
-    `${API_URL}/notifications/${id}/read`,
+    `${API_URL}/notifications/${notificationId}/read`,
     {
       method: "PATCH",
       headers: {
@@ -39,17 +46,18 @@ export async function markAsRead(
   );
 
   if (!response.ok) {
-    throw new Error("Nie udało się oznaczyć powiadomienia.");
+    throw new Error("Nie udało się oznaczyć powiadomienia jako przeczytane.");
   }
 
   return response.json();
 }
 
-export async function markAllAsRead(token: string) {
+export async function getUnreadCount(
+  token: string,
+): Promise<number> {
   const response = await fetch(
-    `${API_URL}/notifications/read-all`,
+    `${API_URL}/notifications/unread-count`,
     {
-      method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -57,8 +65,10 @@ export async function markAllAsRead(token: string) {
   );
 
   if (!response.ok) {
-    throw new Error("Nie udało się oznaczyć powiadomień.");
+    throw new Error("Nie udało się pobrać liczby nieprzeczytanych powiadomień.");
   }
 
-  return response.json();
+  const data = await response.json();
+
+  return data.count;
 }
