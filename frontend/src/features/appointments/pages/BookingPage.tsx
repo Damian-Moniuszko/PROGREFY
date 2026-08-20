@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AvailabilityCalendar from "../components/AvailabilityCalendar";
 import { createAppointment, TimeSlot } from "../api/appointment.api";
+import { createNotificationEvent } from "../../notifications/api/notificationEvents.api";
 import { useAuth } from "../../../context/AuthContext";
 
 interface Props {
@@ -23,6 +24,16 @@ export default function BookingPage({ trainerId, slots }: Props) {
         {
           trainerId,
           slotId: selectedSlot.id,
+        },
+        token,
+      );
+
+      await createNotificationEvent(
+        {
+          userId: trainerId,
+          title: "Nowa rezerwacja treningu",
+          message: "Klient zarezerwował nowy termin treningu.",
+          type: "booking",
         },
         token,
       );
