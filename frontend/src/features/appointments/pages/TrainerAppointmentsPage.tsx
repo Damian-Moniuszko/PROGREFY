@@ -8,6 +8,7 @@ import {
   confirmAppointment,
   completeAppointment,
 } from "../api/appointmentStatus.api";
+import { createNotificationEvent } from "../../notifications/api/notificationEvents.api";
 import AppointmentCard from "../components/AppointmentCard";
 
 export default function TrainerAppointmentsPage() {
@@ -50,6 +51,23 @@ export default function TrainerAppointmentsPage() {
     if (!token) return;
 
     await confirmAppointment(id, token);
+
+    const appointment = appointments.find(
+      (item) => item.id === id,
+    );
+
+    if (appointment?.clientId) {
+      await createNotificationEvent(
+        {
+          userId: appointment.clientId,
+          title: "Trening potwierdzony",
+          message: "Twój trener potwierdził termin treningu.",
+          type: "training",
+        },
+        token,
+      );
+    }
+
     updateStatus(id, "confirmed");
   }
 
