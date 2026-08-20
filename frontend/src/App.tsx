@@ -9,7 +9,6 @@ import LandingPage from './pages/LandingPage'
 import TrainersPage from './pages/TrainersPage'
 import TrainerPage from './pages/TrainerPage'
 import DashboardPage from './pages/DashboardPage'
-import TrainerDashboardPage from './pages/TrainerDashboardPage'
 import TermsPage from './pages/TermsPage'
 import ReportPage from './pages/ReportPage'
 
@@ -26,6 +25,9 @@ import WorkoutSessionPage from './features/training/pages/WorkoutSessionPage'
 import ProfilePage from './features/profile/pages/ProfilePage'
 import ProfileSectionPage from './features/profile/pages/ProfileSectionPage'
 import SettingsPage from './features/profile/pages/SettingsPage'
+
+import TrainerDashboardPage from './features/trainer/pages/TrainerDashboardPage'
+import ClientDetailsPage from './features/trainer/pages/ClientDetailsPage'
 
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -68,6 +70,7 @@ function App() {
 
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/trainer/dashboard" element={<TrainerDashboardPage />} />
+        <Route path="/trainer/client/:id" element={<ClientDetailsPage />} />
 
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/:section" element={<ProfileSectionPage />} />
