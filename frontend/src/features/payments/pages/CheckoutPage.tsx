@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { getAppointmentById } from "../../appointments/api/appointmentDetails.api";
+import { createNotificationEvent } from "../../notifications/api/notificationEvents.api";
 import PaymentButton from "../components/PaymentButton";
 import PaymentStatus from "../components/PaymentStatus";
 import type { Payment } from "../api/payment.api";
@@ -37,6 +38,20 @@ export default function CheckoutPage() {
     loadAppointment();
   }, [appointmentId, token]);
 
+  async function handlePaymentSuccess() {
+    if (!token || !appointment?.clientId) return;
+
+    await createNotificationEvent(
+      {
+        userId: appointment.clientId,
+        title: "Płatność potwierdzona",
+        message: "Twoja płatność za trening została zakończona.",
+        type: "payment",
+      },
+      token,
+    );
+  }
+
   if (!appointment) {
     return <p>{message || "Ładowanie danych treningu..."}</p>;
   }
@@ -60,7 +75,10 @@ export default function CheckoutPage() {
         </section>
 
         {!payment ? (
-          <PaymentButton appointmentId={appointment.id} />
+          <PaymentButton
+            appointmentId={appointment.id}
+            onSuccess={handlePaymentSuccess}
+          />
         ) : (
           <PaymentStatus payment={payment} />
         )}
