@@ -4,6 +4,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { getClientDetails } from "../api/trainer.api";
 import TrainingPlanEditor from "../components/TrainingPlanEditor";
 import ClientProgress from "../components/ClientProgress";
+import ProgressHistory from "../components/ProgressHistory";
 import "./ClientDetailsPage.css";
 
 export default function ClientDetailsPage() {
@@ -62,6 +63,11 @@ export default function ClientDetailsPage() {
             <section>
               <h2>Postępy klienta</h2>
               <ClientProgress progress={client.progress ?? null} />
+            </section>
+
+            <section>
+              <h2>Historia zmian</h2>
+              <ProgressHistory history={client.progressHistory ?? []} />
             </section>
 
             <section>
