@@ -1,0 +1,272 @@
+.workout-session {
+  min-height: calc(100vh - 80px);
+  background: #000;
+  color: white;
+  padding: 60px 0;
+}
+
+.workout-session__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.workout-session__eyebrow {
+  margin: 0 0 12px;
+  color: #2e9d67;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.workout-session__top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.workout-session__top h1 {
+  margin: 0 0 10px;
+  font-size: 42px;
+  letter-spacing: -0.04em;
+}
+
+.workout-session__top p {
+  margin: 0;
+  color: #888;
+}
+
+.workout-session__start,
+.workout-session__finish {
+  border: 0;
+  padding: 13px 24px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.workout-session__start {
+  background: #2e9d67;
+}
+
+.workout-session__finish {
+  background: #252525;
+  border: 1px solid #3a3a3a;
+}
+
+.workout-session__start:disabled,
+.workout-session__finish:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.workout-error {
+  margin-top: 25px;
+  padding: 14px 16px;
+  border: 1px solid #5b2b2b;
+  border-radius: 10px;
+  background: #1b1111;
+  color: #ffb3b3;
+}
+
+.session-exercises {
+  display: grid;
+  gap: 20px;
+}
+
+.session-card {
+  margin-top: 40px;
+  padding: 30px;
+  background: #111;
+  border: 1px solid #292929;
+  border-radius: 20px;
+}
+
+.session-exercises .session-card {
+  margin-top: 20px;
+}
+
+.session-card--intro {
+  max-width: 700px;
+}
+
+.session-card--intro h2 {
+  margin: 0 0 10px;
+}
+
+.session-card--intro p {
+  color: #888;
+  margin: 0;
+}
+
+.workout-summary {
+  margin-top: 25px;
+  padding: 18px;
+  background: #171717;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  color: #888;
+}
+
+.workout-summary strong {
+  color: white;
+}
+
+.session-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 25px;
+}
+
+.session-card__number {
+  color: #2e9d67;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.session-card__header h2 {
+  margin: 8px 0 5px;
+  font-size: 26px;
+}
+
+.session-card__header p {
+  margin: 0;
+  color: #777;
+}
+
+.session-card__target {
+  padding: 9px 12px;
+  border: 1px solid #303030;
+  border-radius: 9px;
+  color: #aaa;
+  white-space: nowrap;
+}
+
+.sets-list {
+  display: grid;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.set-box {
+  padding: 20px;
+  background: #171717;
+  border: 1px solid transparent;
+  border-radius: 15px;
+}
+
+.set-box--saved {
+  border-color: #2e9d67;
+}
+
+.set-box__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.set-box__header h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.set-box__header span {
+  color: #2e9d67;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.inputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+  margin-top: 18px;
+}
+
+.inputs label {
+  display: grid;
+  gap: 8px;
+  color: #888;
+  font-size: 13px;
+}
+
+.inputs input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #222;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  outline: none;
+}
+
+.inputs input:focus {
+  border-color: #2e9d67;
+}
+
+.set-save-button {
+  margin-top: 18px;
+  background: #2e9d67;
+  color: white;
+  border: 0;
+  padding: 11px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.set-save-button:hover {
+  opacity: 0.9;
+}
+
+.workout-session__back {
+  margin-top: 30px;
+  background: transparent;
+  color: #999;
+  border: 1px solid #303030;
+  padding: 11px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.workout-session__back:hover {
+  color: white;
+  border-color: #555;
+}
+
+@media (max-width: 800px) {
+  .workout-session {
+    padding: 40px 0;
+  }
+
+  .workout-session__container {
+    padding: 0 20px;
+  }
+
+  .workout-session__top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .workout-session__top h1 {
+    font-size: 32px;
+  }
+
+  .session-card {
+    padding: 22px;
+  }
+
+  .session-card__header {
+    flex-direction: column;
+  }
+
+  .inputs {
+    grid-template-columns: 1fr;
+  }
+}

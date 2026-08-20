@@ -1,0 +1,696 @@
+.settings-page {
+  min-height: 100vh;
+  padding: 42px 32px 120px;
+  background:
+    radial-gradient(circle at 80% 8%, rgba(31, 107, 72, 0.08), transparent 30%),
+    #080808;
+  color: #fff;
+}
+
+.settings-page__container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.settings-back {
+  display: inline-flex;
+  margin-bottom: 44px;
+  color: #777;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color .2s ease;
+}
+
+.settings-back:hover {
+  color: #fff;
+}
+
+.settings-hero {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid #242424;
+}
+
+.settings-avatar-wrap {
+  width: 150px;
+  flex: 0 0 150px;
+}
+
+.settings-avatar {
+  width: 150px;
+  height: 150px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #292929;
+  border-radius: 50%;
+  background: #151515;
+  color: #aaa;
+  font-size: 28px;
+}
+
+.settings-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.settings-avatar-button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid #303030;
+  border-radius: 9px;
+  background: #111;
+  color: #ddd;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+.settings-avatar-button:hover {
+  border-color: #5cc18d;
+  color: #fff;
+}
+
+.settings-file-input {
+  display: none;
+}
+
+.settings-hero-copy {
+  min-width: 0;
+}
+
+.settings-eyebrow {
+  margin: 0 0 10px;
+  color: #5cc18d;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+
+.settings-hero h1 {
+  margin: 0 0 8px;
+  font-size: clamp(38px, 5vw, 60px);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.settings-hero-copy > span {
+  color: #888;
+  font-size: 15px;
+}
+
+.settings-section {
+  padding: 54px 0;
+  border-bottom: 1px solid #202020;
+}
+
+.settings-section-heading {
+  margin-bottom: 30px;
+}
+
+.settings-section-heading h2 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  letter-spacing: -.025em;
+}
+
+.settings-section-heading > span {
+  color: #777;
+  font-size: 14px;
+}
+
+.settings-form {
+  width: 100%;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.settings-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+}
+
+.settings-field > span {
+  color: #a5a5a5;
+  font-size: 13px;
+}
+
+.settings-field input,
+.settings-field select,
+.settings-date-trigger {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 52px;
+  padding: 0 15px;
+  border: 1px solid #292929;
+  border-radius: 10px;
+  outline: none;
+  background: #111;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  transition: border-color .2s ease, background .2s ease;
+}
+
+.settings-field input:focus,
+.settings-field select:focus,
+.settings-date-trigger:focus {
+  border-color: #3e8d68;
+  background: #141414;
+}
+
+.settings-field input::placeholder {
+  color: #555;
+}
+
+.settings-field input.has-error,
+.settings-field select.has-error,
+.settings-date-trigger.has-error {
+  border-color: #9c4848;
+}
+
+.settings-field-error {
+  color: #e47e7e;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.settings-date-field {
+  z-index: 5;
+}
+
+.settings-date-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  text-align: left;
+}
+
+.settings-date-icon {
+  color: #777;
+  font-size: 18px;
+}
+
+.settings-calendar {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 320px;
+  padding: 16px;
+  border: 1px solid #2c2c2c;
+  border-radius: 14px;
+  background: #111;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .5);
+}
+
+.settings-calendar__header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.settings-calendar__header strong {
+  text-align: center;
+  color: #fff;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+
+.settings-calendar__header button {
+  width: 40px;
+  height: 36px;
+  border: 1px solid #292929;
+  border-radius: 8px;
+  background: #161616;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.settings-calendar__header button:hover {
+  color: #fff;
+  border-color: #444;
+}
+
+.settings-calendar__weekdays,
+.settings-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.settings-calendar__weekdays {
+  margin-bottom: 7px;
+}
+
+.settings-calendar__weekdays span {
+  color: #5f5f5f;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.settings-calendar__grid button,
+.settings-calendar__grid > span {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+
+.settings-calendar__grid button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #ddd;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+}
+
+.settings-calendar__grid button:hover {
+  border-color: #315e49;
+  background: #163324;
+}
+
+.settings-calendar__grid button.is-selected {
+  background: #1f6b48;
+  color: #fff;
+  border-color: #5cc18d;
+}
+
+.settings-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 28px;
+}
+
+.settings-primary-button {
+  min-width: 180px;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 9px;
+  background: #1f6b48;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background .2s ease, transform .2s ease;
+}
+
+.settings-primary-button:hover:not(:disabled) {
+  background: #278457;
+  transform: translateY(-1px);
+}
+
+.settings-primary-button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.settings-status {
+  margin: 0;
+  color: #7ed1a4;
+  font-size: 13px;
+}
+
+.settings-password-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.password-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.password-rules span {
+  padding: 7px 10px;
+  border: 1px solid #292929;
+  border-radius: 999px;
+  color: #666;
+  background: #101010;
+  font-size: 11px;
+}
+
+.password-rules span.valid {
+  border-color: rgba(92, 193, 141, .35);
+  color: #6fc89c;
+  background: rgba(31, 107, 72, .12);
+}
+
+.connected-accounts {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #252525;
+}
+
+.connected-account {
+  width: 100%;
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: 42px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border: 0;
+  border-bottom: 1px solid #252525;
+  background: transparent;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.connected-account:hover .connected-account__arrow {
+  color: #5cc18d;
+  transform: translateX(3px);
+}
+
+.connected-account > span:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.connected-account strong {
+  font-size: 14px;
+}
+
+.connected-account small {
+  color: #666;
+  font-size: 12px;
+}
+
+.connected-account__brand {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #2b2b2b;
+  border-radius: 10px;
+  background: #151515;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.connected-account__brand.google {
+  color: #fff;
+}
+
+.connected-account__brand.apple {
+  color: #fff;
+}
+
+.connected-account__brand.facebook {
+  color: #6ca9ff;
+}
+
+.connected-account__arrow {
+  color: #666;
+  transition: color .2s ease, transform .2s ease;
+  font-size: 18px;
+}
+
+/* Phone country selector */
+.settings-phone-control {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 8px;
+  position: relative;
+}
+
+.settings-country-picker {
+  position: relative;
+  z-index: 30;
+}
+
+.settings-country-trigger {
+  width: 100%;
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: 26px 1fr 18px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 13px;
+  border: 1px solid #292929;
+  border-radius: 10px;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+}
+
+.settings-country-trigger:hover,
+.settings-country-trigger:focus {
+  border-color: #3e8d68;
+  outline: none;
+}
+
+.settings-country-trigger.has-error {
+  border-color: #9c4848;
+}
+
+.settings-country-flag {
+  font-size: 19px;
+  line-height: 1;
+}
+
+.settings-country-chevron {
+  color: #777;
+  font-size: 17px;
+  text-align: right;
+}
+
+.settings-country-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 330px;
+  max-width: min(330px, calc(100vw - 36px));
+  padding: 10px;
+  border: 1px solid #2c2c2c;
+  border-radius: 13px;
+  background: #111;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .55);
+}
+
+.settings-country-search {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 42px;
+  padding: 0 12px;
+  border: 1px solid #292929;
+  border-radius: 9px;
+  outline: none;
+  background: #171717;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+}
+
+.settings-country-search:focus {
+  border-color: #3e8d68;
+}
+
+.settings-country-search::placeholder {
+  color: #666;
+}
+
+.settings-country-list {
+  max-height: 280px;
+  margin-top: 8px;
+  overflow-y: auto;
+}
+
+.settings-country-option {
+  width: 100%;
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #ddd;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+}
+
+.settings-country-option:hover,
+.settings-country-option.is-selected {
+  background: #183b2b;
+  color: #fff;
+}
+
+.settings-country-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-country-code {
+  color: #777;
+  font-size: 12px;
+}
+
+.settings-country-option.is-selected .settings-country-code {
+  color: #7ed1a4;
+}
+
+.settings-phone-hint {
+  color: #5f5f5f;
+  font-size: 11px;
+}
+
+@media (max-width: 760px) {
+  .settings-page {
+    padding: 28px 18px 80px;
+  }
+
+  .settings-hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .settings-grid,
+  .settings-password-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-calendar {
+    width: min(320px, calc(100vw - 36px));
+  }
+
+  .settings-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .settings-primary-button {
+    width: 100%;
+  }
+
+  .settings-phone-control {
+    grid-template-columns: 125px minmax(0, 1fr);
+  }
+
+  .settings-country-menu {
+    width: 300px;
+  }
+}
+
+
+.settings-calendar__title-button {
+  width: auto !important;
+  min-width: 0;
+  height: auto !important;
+  padding: 6px 8px;
+  border: 0 !important;
+  background: transparent !important;
+  color: #fff !important;
+  font: inherit;
+  font-size: 14px !important;
+  font-weight: 700;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.settings-calendar__title-button:hover {
+  color: #5cc18d !important;
+  border-color: transparent !important;
+}
+
+.settings-calendar__years,
+.settings-calendar__months {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.settings-calendar__years button,
+.settings-calendar__months button {
+  min-height: 48px;
+  border: 1px solid #292929;
+  border-radius: 9px;
+  background: #161616;
+  color: #ddd;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.settings-calendar__years button:hover:not(:disabled),
+.settings-calendar__months button:hover {
+  border-color: #315e49;
+  background: #163324;
+  color: #fff;
+}
+
+.settings-calendar__years button.is-selected,
+.settings-calendar__months button.is-selected {
+  border-color: #5cc18d;
+  background: #1f6b48;
+  color: #fff;
+}
+
+.settings-calendar__years button:disabled {
+  opacity: .25;
+  cursor: not-allowed;
+}
+
+.settings-calendar__switch {
+  width: 100%;
+  margin-top: 14px;
+  padding: 9px 12px;
+  border: 1px solid #292929;
+  border-radius: 8px;
+  background: #151515;
+  color: #777;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+.settings-calendar__switch:hover {
+  border-color: #315e49;
+  color: #5cc18d;
+}
+
+.settings-calendar__grid button:disabled {
+  opacity: .2;
+  cursor: not-allowed;
+}
+
+.settings-calendar__grid button:disabled:hover {
+  border-color: transparent;
+  background: transparent;
+}

@@ -1,0 +1,165 @@
+.training-plan-page {
+  min-height: calc(100vh - 80px);
+  background: var(--color-black);
+  color: white;
+  padding: 60px 0;
+}
+
+.training-plan-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+
+/* TABS */
+
+.training-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #252525;
+}
+
+.training-tabs button {
+  padding: 12px 22px;
+  border-radius: 10px;
+  border: 1px solid #303030;
+  background: transparent;
+  color: #999;
+  font-size: 15px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.training-tabs button:hover {
+  border-color: #2e9d67;
+  color: white;
+}
+
+.training-tabs button.active {
+  background: #2e9d67;
+  border-color: #2e9d67;
+  color: white;
+}
+
+
+/* HEADER */
+
+.plan-header span {
+  color: #27ae70;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .15em;
+}
+
+.plan-header h1 {
+  font-size: 42px;
+  margin: 15px 0;
+}
+
+.plan-header p {
+  color: #888;
+}
+
+
+/* WORKOUTS */
+
+.workouts {
+  margin-top: 50px;
+  display: grid;
+  gap: 25px;
+}
+
+.workout-card {
+  background: #111;
+  border: 1px solid #292929;
+  border-radius: 20px;
+  padding: 30px;
+}
+
+.workout-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.workout-title span {
+  color: #27ae70;
+  font-size: 14px;
+}
+
+.workout-title h2 {
+  margin-top: 10px;
+}
+
+
+/* BUTTON */
+
+.workout-start-button {
+  background: #2e9d67;
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.workout-start-button:hover {
+  opacity: .85;
+}
+
+
+/* EXERCISE */
+
+.exercise {
+  margin-top: 20px;
+  padding: 20px;
+  background: #171717;
+  border-radius: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.exercise strong {
+  display: block;
+}
+
+.exercise p {
+  color: #777;
+  margin: 5px 0;
+}
+
+.exercise span {
+  color: #27ae70;
+}
+
+
+/* MOBILE */
+
+@media(max-width:800px){
+
+  .training-tabs {
+    overflow-x: auto;
+  }
+
+  .workout-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .exercise {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .plan-header h1 {
+    font-size: 32px;
+  }
+
+}

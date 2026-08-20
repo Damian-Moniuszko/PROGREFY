@@ -1,0 +1,1060 @@
+.trainer-dashboard-page {
+  min-height: calc(100vh - 80px);
+  padding: 70px 32px 100px;
+
+  background:
+    radial-gradient(
+      circle at 80% 10%,
+      rgba(31, 107, 72, 0.08),
+      transparent 35%
+    ),
+    var(--color-black);
+}
+
+.trainer-dashboard {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.trainer-dashboard__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 32px;
+  margin-bottom: 48px;
+}
+
+.trainer-dashboard__eyebrow {
+  margin: 0 0 10px;
+
+  color: var(--color-green-light);
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.trainer-dashboard__header h1 {
+  margin: 0 0 10px;
+
+  color: var(--color-white);
+
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.trainer-dashboard__header > div > p:last-child {
+  margin: 0;
+
+  color: var(--color-light-gray);
+
+  font-size: 15px;
+}
+
+.trainer-dashboard__logout {
+  padding: 11px 18px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 8px;
+
+  color: var(--color-light-gray);
+  background: transparent;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.trainer-dashboard__logout:hover {
+  color: var(--color-white);
+  border-color: var(--color-light-gray);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* =========================
+   STATS
+========================= */
+
+.trainer-dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 16px;
+  margin-bottom: 64px;
+}
+
+.trainer-stat {
+  min-height: 130px;
+  padding: 26px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.025),
+      rgba(255, 255, 255, 0)
+    ),
+    #111;
+
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.18);
+
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.trainer-stat:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  transform: translateY(-2px);
+}
+
+.trainer-stat span {
+  display: block;
+
+  color: var(--color-light-gray);
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.trainer-stat strong {
+  display: block;
+
+  color: var(--color-white);
+
+  font-size: 30px;
+  line-height: 1;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
+.trainer-dashboard-section {
+  margin-bottom: 64px;
+}
+
+.trainer-dashboard-section__header {
+  margin-bottom: 22px;
+}
+
+.trainer-dashboard-section__header h2 {
+  margin: 0;
+
+  color: var(--color-white);
+
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+/* =========================
+   PROFILE
+========================= */
+
+.trainer-profile-form {
+  width: 100%;
+
+  padding: 30px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 22px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.025),
+      rgba(255, 255, 255, 0)
+    ),
+    #111;
+
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.2);
+}
+
+.trainer-profile-form label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  color: var(--color-light-gray);
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.trainer-profile-form input,
+.trainer-profile-form textarea,
+.trainer-profile-form select {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 13px 14px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 9px;
+
+  outline: none;
+
+  color: var(--color-white);
+  background: #0b0b0b;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.trainer-profile-form input::placeholder,
+.trainer-profile-form textarea::placeholder {
+  color: #666;
+}
+
+.trainer-profile-form input:focus,
+.trainer-profile-form textarea:focus,
+.trainer-profile-form select:focus {
+  border-color: var(--color-green);
+  background: #0e0e0e;
+
+  box-shadow:
+    0 0 0 3px rgba(31, 107, 72, 0.12);
+}
+
+.trainer-profile-form textarea {
+  min-height: 130px;
+
+  resize: vertical;
+
+  line-height: 1.5;
+}
+
+.trainer-profile-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 18px;
+}
+
+.trainer-profile-submit {
+  align-self: flex-start;
+
+  margin-top: 2px;
+
+  padding: 13px 22px;
+
+  border: 1px solid var(--color-green);
+  border-radius: 9px;
+
+  color: var(--color-white);
+  background: var(--color-green);
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.trainer-profile-submit:hover {
+  background: var(--color-green-light);
+
+  transform: translateY(-1px);
+}
+
+.trainer-profile-submit:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =========================
+   NEXT APPOINTMENT
+========================= */
+
+.trainer-next-appointment {
+  padding: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 32px;
+
+  border: 1px solid var(--color-green);
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(31, 107, 72, 0.13),
+      rgba(31, 107, 72, 0.03)
+    );
+}
+
+.trainer-next-appointment__date {
+  margin: 0 0 8px;
+
+  color: var(--color-green-light);
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.trainer-next-appointment h3 {
+  margin: 0 0 8px;
+
+  color: var(--color-white);
+
+  font-size: 24px;
+  letter-spacing: -0.02em;
+}
+
+.trainer-next-appointment > div:first-child > p:last-child {
+  margin: 0;
+
+  color: var(--color-light-gray);
+
+  font-size: 14px;
+}
+
+.trainer-next-appointment__price {
+  text-align: right;
+}
+
+.trainer-next-appointment__price span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: var(--color-light-gray);
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.trainer-next-appointment__price strong {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: var(--color-white);
+
+  font-size: 24px;
+}
+
+.trainer-next-appointment__price small {
+  color: var(--color-green-light);
+
+  font-size: 11px;
+}
+
+/* =========================
+   APPOINTMENTS
+========================= */
+
+.trainer-appointments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.trainer-appointment-card {
+  padding: 22px 24px;
+
+  display: grid;
+  grid-template-columns: minmax(180px, 1.4fr) minmax(140px, 1fr) auto;
+  align-items: center;
+
+  gap: 24px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.025),
+      rgba(255, 255, 255, 0)
+    ),
+    #111;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.trainer-appointment-card:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: #141414;
+  transform: translateY(-1px);
+}
+
+.trainer-appointment-card p {
+  margin: 0 0 6px;
+
+  color: var(--color-light-gray);
+
+  font-size: 13px;
+}
+
+.trainer-appointment-card h3 {
+  margin: 0;
+
+  color: var(--color-white);
+
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.trainer-appointment-card > div:nth-child(2) {
+  color: var(--color-white);
+}
+
+.trainer-appointment-card > div:nth-child(2) p {
+  color: var(--color-light-gray);
+}
+
+.trainer-appointment-card > div:nth-child(2) span {
+  display: inline-block;
+  margin-top: 3px;
+
+  color: var(--color-white);
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+.trainer-appointment-status {
+  justify-self: end;
+
+  min-width: 90px;
+
+  padding: 7px 11px;
+
+  border: 1px solid;
+  border-radius: 999px;
+
+  text-align: center;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.trainer-appointment-status--pending {
+  border-color: rgba(230, 184, 74, 0.35);
+
+  color: #e6b84a;
+
+  background: rgba(230, 184, 74, 0.08);
+}
+
+.trainer-appointment-status--confirmed {
+  border-color: rgba(31, 107, 72, 0.45);
+
+  color: var(--color-green-light);
+
+  background: rgba(31, 107, 72, 0.12);
+}
+
+.trainer-appointment-status--completed {
+  border-color: rgba(138, 138, 138, 0.25);
+
+  color: #999;
+
+  background: rgba(138, 138, 138, 0.06);
+}
+
+.trainer-appointment-status--cancelled {
+  border-color: rgba(213, 106, 106, 0.3);
+
+  color: #d56a6a;
+
+  background: rgba(213, 106, 106, 0.07);
+}
+
+
+/* =========================
+   STATUS CARD
+========================= */
+
+.trainer-appointment-card--pending {
+  border-left: 3px solid #e6b84a;
+}
+
+.trainer-appointment-card--confirmed {
+  border-left: 3px solid var(--color-green);
+}
+
+.trainer-appointment-card--completed {
+  opacity: 0.65;
+}
+
+.trainer-appointment-card--cancelled {
+  opacity: 0.5;
+}
+
+
+/* =========================
+   ACTIONS
+========================= */
+
+.trainer-appointment-actions {
+  grid-column: 1 / -1;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 8px;
+
+  padding-top: 14px;
+
+  border-top: 1px solid var(--color-dark-gray);
+}
+
+.trainer-appointment-actions button {
+  min-height: 36px;
+
+  padding: 9px 15px;
+
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.trainer-appointment-actions button:hover {
+  transform: translateY(-1px);
+}
+
+.trainer-appointment-actions button:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* ACCEPT */
+
+.trainer-appointment-confirm {
+  border: 1px solid var(--color-green);
+
+  color: var(--color-white);
+
+  background: var(--color-green);
+}
+
+.trainer-appointment-confirm:hover {
+  background: var(--color-green-light);
+}
+
+
+/* CANCEL */
+
+.trainer-appointment-cancel {
+  border: 1px solid #5a2929;
+
+  color: #e98a8a;
+
+  background: rgba(120, 40, 40, 0.1);
+}
+
+.trainer-appointment-cancel:hover {
+  border-color: #713737;
+
+  color: #ffaaaa;
+
+  background: rgba(120, 40, 40, 0.18);
+}
+
+
+/* COMPLETE */
+
+.trainer-appointment-complete {
+  border: 1px solid var(--color-green);
+
+  color: var(--color-green-light);
+
+  background: rgba(31, 107, 72, 0.1);
+}
+
+.trainer-appointment-complete:hover {
+  color: var(--color-white);
+
+  background: var(--color-green);
+}
+
+
+/* HISTORY */
+
+.trainer-appointment-history {
+  grid-column: 1 / -1;
+
+  padding-top: 12px;
+
+  border-top: 1px solid var(--color-dark-gray);
+
+  color: var(--color-light-gray);
+
+  font-size: 12px;
+}
+
+
+/* =========================
+   AVAILABILITY
+========================= */
+
+.trainer-availability-add {
+  margin-top: 18px;
+
+  padding: 10px 16px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 8px;
+
+  color: var(--color-light-gray);
+  background: transparent;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.trainer-availability-add:hover {
+  color: var(--color-white);
+
+  border-color: var(--color-green);
+
+  background: rgba(31, 107, 72, 0.08);
+
+  transform: translateY(-1px);
+}
+
+.trainer-availability-form {
+  margin-bottom: 18px;
+  padding: 24px;
+
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr auto;
+  align-items: end;
+
+  gap: 16px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 14px;
+
+  background: #111;
+}
+
+.trainer-availability-form label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+
+  color: var(--color-light-gray);
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.trainer-availability-form input,
+.trainer-availability-form select {
+  box-sizing: border-box;
+
+  width: 100%;
+
+  padding: 12px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 8px;
+
+  outline: none;
+
+  color: var(--color-white);
+  background: #0b0b0b;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.trainer-availability-form input:focus,
+.trainer-availability-form select:focus {
+  border-color: var(--color-green);
+
+  box-shadow:
+    0 0 0 3px rgba(31, 107, 72, 0.12);
+}
+
+.trainer-availability-submit {
+  padding: 12px 18px;
+
+  border: 1px solid var(--color-green);
+  border-radius: 8px;
+
+  color: var(--color-white);
+  background: var(--color-green);
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.trainer-availability-submit:hover {
+  background: var(--color-green-light);
+  transform: translateY(-1px);
+}
+
+.trainer-availability-submit:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+  transform: none;
+}
+
+.trainer-availability-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  gap: 10px;
+}
+
+.trainer-availability-card {
+  padding: 18px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 12px;
+
+  background: #111;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.trainer-availability-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: #141414;
+}
+
+.trainer-availability-card__day {
+  margin: 0 0 5px;
+
+  color: var(--color-white);
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.trainer-availability-card__time {
+  margin: 0;
+
+  color: var(--color-light-gray);
+
+  font-size: 13px;
+}
+
+.trainer-availability-card__delete {
+  padding: 8px 12px;
+
+  border: 1px solid #4a2525;
+  border-radius: 7px;
+
+  color: #d97878;
+  background: rgba(120, 40, 40, 0.08);
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.trainer-availability-card__delete:hover {
+  border-color: #713737;
+
+  background: rgba(120, 40, 40, 0.16);
+}
+
+
+/* =========================
+   EMPTY / ERROR
+========================= */
+
+.trainer-dashboard-empty {
+  padding: 40px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 14px;
+
+  text-align: center;
+
+  background: #111;
+}
+
+.trainer-dashboard-empty h3 {
+  margin: 0 0 8px;
+
+  color: var(--color-white);
+
+  font-size: 17px;
+}
+
+.trainer-dashboard-empty p {
+  margin: 0;
+
+  color: var(--color-light-gray);
+
+  font-size: 14px;
+}
+
+.trainer-dashboard-error {
+  width: min(100%, 600px);
+
+  margin: 100px auto 0;
+  padding: 20px;
+
+  border: 1px solid rgba(160, 50, 50, 0.5);
+  border-radius: 12px;
+
+  color: #e98a8a;
+  background: rgba(100, 30, 30, 0.12);
+
+  text-align: center;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+  .trainer-dashboard-page {
+    padding: 50px 20px 80px;
+  }
+
+  .trainer-dashboard__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .trainer-profile-form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .trainer-appointment-card {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .trainer-appointment-status {
+    justify-self: start;
+  }
+
+  .trainer-availability-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .trainer-availability-submit {
+    width: 100%;
+  }
+
+  .trainer-availability-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .trainer-dashboard__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .trainer-dashboard__logout {
+    width: 100%;
+  }
+
+  .trainer-next-appointment {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .trainer-next-appointment__price {
+    width: 100%;
+
+    text-align: left;
+  }
+
+  .trainer-appointment-card {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .trainer-appointment-status {
+    justify-self: start;
+  }
+
+  .trainer-appointment-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .trainer-availability-form {
+    grid-template-columns: 1fr;
+  }
+
+  .trainer-profile-form {
+    padding: 22px;
+  }
+}
+
+@media (max-width: 500px) {
+  .trainer-dashboard-page {
+    padding: 40px 16px 70px;
+  }
+
+  .trainer-appointment-card {
+    padding: 18px;
+  }
+
+  .trainer-appointment-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .trainer-appointment-actions button {
+    width: 100%;
+  }
+
+  .trainer-availability-form {
+    padding: 18px;
+  }
+
+  .trainer-availability-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .trainer-availability-card__delete {
+    width: 100%;
+  }
+}
+
+/* =========================
+   PAYMENT STATUS
+========================= */
+
+.trainer-appointment-statuses {
+  justify-self: end;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+}
+
+.trainer-payment-status {
+  padding: 6px 10px;
+
+  border-radius: 20px;
+
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.trainer-payment-status--paid {
+  color: var(--color-green-light);
+  background: rgba(31, 107, 72, 0.15);
+  border: 1px solid rgba(31, 107, 72, 0.3);
+}
+
+.trainer-payment-status--pending {
+  color: #e6b84a;
+  background: rgba(230, 184, 74, 0.08);
+  border: 1px solid rgba(230, 184, 74, 0.25);
+}

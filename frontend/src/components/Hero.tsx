@@ -32,7 +32,7 @@ function Hero() {
         <div className="hero__preview">
           <div className="hero-card">
             <div className="hero-card__header">
-              <span>FITBOOK</span>
+              <span>PROGREFY</span>
               <span className="hero-card__status">●</span>
             </div>
 

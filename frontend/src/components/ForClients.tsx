@@ -9,7 +9,7 @@ const clientFeatures = [
   {
     title: 'Umawiaj treningi',
     description:
-      'Wybierz dostępny termin i opłać trening bezpośrednio przez FITBOOK.',
+      'Wybierz dostępny termin i opłać trening bezpośrednio przez PROGREFY.',
   },
   {
     title: 'Miej plan zawsze przy sobie',
@@ -37,7 +37,7 @@ function ForClients() {
           </h2>
 
           <p className="for-clients__description">
-            FITBOOK łączy Cię z trenerem i daje Ci wszystkie
+            PROGREFY łączy Cię z trenerem i daje Ci wszystkie
             narzędzia potrzebne do świadomego trenowania.
           </p>
         </div>
@@ -45,7 +45,7 @@ function ForClients() {
         <div className="for-clients__layout">
           <div className="client-dashboard">
             <div className="client-dashboard__topbar">
-              <strong>FITBOOK</strong>
+              <strong>PROGREFY</strong>
 
               <div className="client-dashboard__icons">
                 <span>●</span>

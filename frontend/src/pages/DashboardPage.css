@@ -1,0 +1,507 @@
+.dashboard-page {
+  min-height: calc(100vh - 80px);
+  padding: 70px 32px;
+
+  background: var(--color-black);
+}
+
+.dashboard {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 32px;
+
+  margin-bottom: 48px;
+}
+
+.dashboard__eyebrow {
+  margin-bottom: 10px;
+
+  color: var(--color-green-light);
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.dashboard__header h1 {
+  margin-bottom: 10px;
+
+  color: var(--color-white);
+
+  font-size: clamp(36px, 5vw, 56px);
+  letter-spacing: -0.05em;
+}
+
+.dashboard__header p:last-child {
+  color: var(--color-light-gray);
+}
+
+.dashboard__logout {
+  padding: 11px 18px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 8px;
+
+  color: var(--color-light-gray);
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.dashboard__logout:hover {
+  color: var(--color-white);
+  border-color: var(--color-light-gray);
+}
+
+.dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+
+  margin-bottom: 48px;
+}
+
+.dashboard-stat {
+  padding: 24px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 14px;
+
+  background: #111;
+}
+
+.dashboard-stat span {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: var(--color-light-gray);
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.dashboard-stat strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: var(--color-white);
+
+  font-size: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-section {
+  margin-bottom: 48px;
+}
+
+.dashboard-section__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+}
+
+.dashboard-section__header h2 {
+  color: var(--color-white);
+
+  font-size: 28px;
+  letter-spacing: -0.03em;
+}
+
+.dashboard-section__link {
+  border: 0;
+
+  color: var(--color-green-light);
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.next-appointment {
+  padding: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 32px;
+
+  border: 1px solid var(--color-green);
+  border-radius: 16px;
+
+  background: rgba(31, 107, 72, 0.1);
+}
+
+.next-appointment__date {
+  margin-bottom: 8px;
+
+  color: var(--color-green-light);
+
+  font-size: 14px;
+}
+
+.next-appointment h3 {
+  margin-bottom: 8px;
+
+  color: var(--color-white);
+
+  font-size: 24px;
+}
+
+.next-appointment > div:first-child > p:last-child {
+  color: var(--color-light-gray);
+}
+
+.next-appointment__price {
+  text-align: right;
+}
+
+.next-appointment__price span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: var(--color-light-gray);
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.next-appointment__price strong {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: var(--color-white);
+
+  font-size: 24px;
+}
+
+.next-appointment__price small {
+  color: var(--color-green-light);
+
+  font-size: 11px;
+}
+
+.appointments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.appointment-card {
+  padding: 22px 24px;
+
+  display: grid;
+  grid-template-columns: 1.5fr 1fr auto;
+  align-items: center;
+
+  gap: 24px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 12px;
+
+  background: #111;
+}
+
+.appointment-card p {
+  margin-bottom: 5px;
+
+  color: var(--color-light-gray);
+
+  font-size: 13px;
+}
+
+.appointment-card h3 {
+  color: var(--color-white);
+
+  font-size: 16px;
+}
+
+.appointment-card > div:nth-child(2) {
+  color: var(--color-white);
+}
+
+.appointment-card > div:nth-child(2) span {
+  color: var(--color-light-gray);
+
+  font-size: 13px;
+}
+
+.appointment-status {
+  display: inline-block;
+
+  padding: 6px 10px;
+
+  border-radius: 20px;
+
+  color: var(--color-green-light);
+  background: rgba(31, 107, 72, 0.15);
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.dashboard-empty {
+  padding: 40px;
+
+  border: 1px solid var(--color-dark-gray);
+  border-radius: 14px;
+
+  text-align: center;
+
+  background: #111;
+}
+
+.dashboard-empty h3 {
+  margin-bottom: 8px;
+
+  color: var(--color-white);
+}
+
+.dashboard-empty p {
+  margin-bottom: 20px;
+
+  color: var(--color-light-gray);
+}
+
+.dashboard-empty button {
+  padding: 11px 18px;
+
+  border: 1px solid var(--color-green-light);
+  border-radius: 8px;
+
+  color: var(--color-white);
+  background: var(--color-green);
+
+  cursor: pointer;
+}
+
+.dashboard-error {
+  max-width: 500px;
+  margin: 100px auto;
+
+  padding: 24px;
+
+  border: 1px solid #6b3030;
+  border-radius: 12px;
+
+  color: #ff8f8f;
+  background: rgba(107, 48, 48, 0.12);
+
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .dashboard-page {
+    padding: 50px 20px;
+  }
+
+  .dashboard__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dashboard__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .next-appointment {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .next-appointment__price {
+    text-align: left;
+  }
+
+  .appointment-card {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+.appointment-cancel {
+  display: block;
+
+  margin-top: 10px;
+
+  padding: 8px 12px;
+
+  border: 1px solid #5a3030;
+  border-radius: 7px;
+
+  color: #ff8f8f;
+  background: transparent;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.appointment-cancel:hover:not(:disabled) {
+  background: rgba(138, 68, 68, 0.12);
+  border-color: #8a4444;
+}
+
+.appointment-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =========================
+   PAYMENT
+========================= */
+
+.appointment-card__status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.appointment-payment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--color-light-gray);
+
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.appointment-payment--pending {
+  color: #e6b84a;
+}
+
+.appointment-payment--paid {
+  color: var(--color-green-light);
+}
+
+.appointment-payment--failed {
+  color: #e98a8a;
+}
+
+.appointment-payment--refunded {
+  color: #9b9b9b;
+}
+
+.appointment-pay {
+  min-width: 110px;
+  padding: 9px 16px;
+
+  border: 1px solid var(--color-green);
+  border-radius: 8px;
+
+  color: var(--color-white);
+  background: var(--color-green);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.appointment-pay:hover {
+  background: var(--color-green-light);
+  border-color: var(--color-green-light);
+
+  transform: translateY(-1px);
+}
+
+.appointment-pay:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =========================
+   CANCEL BUTTON
+========================= */
+
+.appointment-cancel {
+  padding: 9px 16px;
+
+  border: 1px solid #5a3030;
+  border-radius: 8px;
+
+  color: #ff8f8f;
+  background: transparent;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.appointment-cancel:hover {
+  border-color: #8a4444;
+  background: rgba(120, 40, 40, 0.12);
+}
+
+.appointment-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================
+   PAYMENT + STATUS LAYOUT
+========================= */
+
+.appointment-card__status
+  .appointment-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;
+}
+
+.appointment-card__status
+  .appointment-payment {
+  white-space: nowrap;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+  .appointment-card__status {
+    align-items: flex-start;
+  }
+
+  .appointment-pay,
+  .appointment-cancel {
+    width: 100%;
+  }
+
+  .appointment-payment {
+    white-space: normal;
+  }
+}

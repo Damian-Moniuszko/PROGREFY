@@ -1,0 +1,200 @@
+import { useState } from 'react'
+import type { FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import './LoginPage.css'
+
+interface LoginResponse {
+  token: string
+  user: {
+    id: number
+    email: string
+    firstName: string
+    lastName: string
+    role: 'CLIENT' | 'TRAINER'
+  }
+  code?: string
+  message?: string
+}
+
+function LoginPage() {
+  const { login } = useAuth()
+  const navigate = useNavigate()
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [unverifiedEmail, setUnverifiedEmail] =
+    useState('')
+
+  function handleGoogleLogin() {
+    window.location.href =
+      'http://localhost:3000/api/auth/google'
+  }
+
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault()
+
+    setLoading(true)
+    setError('')
+    setUnverifiedEmail('')
+
+    try {
+      const response = await fetch(
+        'http://localhost:3000/api/auth/login',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        },
+      )
+
+      const data: LoginResponse =
+        await response.json()
+
+      if (!response.ok) {
+        if (data.code === 'EMAIL_NOT_VERIFIED') {
+          setUnverifiedEmail(
+            email.trim().toLowerCase(),
+          )
+        }
+
+        throw new Error(
+          data.message ||
+            'Nieprawidłowy email lub hasło.',
+        )
+      }
+
+      await login(data.token)
+
+      navigate(
+        data.user.role === 'TRAINER'
+          ? '/'
+          : '/',
+      )
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'Wystąpił błąd podczas logowania.',
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <main className="login-page">
+      <div className="login-card">
+        <div className="login-card__header">
+          <Link
+            to="/"
+            className="login-card__logo"
+          >
+            PROGREFY
+          </Link>
+
+          <p className="login-card__eyebrow">
+            WITAJ PONOWNIE
+          </p>
+
+          <h1>Zaloguj się</h1>
+
+          <p>
+            Zaloguj się do swojego konta PROGREFY.
+          </p>
+        </div>
+
+        <form
+          className="login-form"
+          onSubmit={handleSubmit}
+        >
+          <div className="login-form__field">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(event) =>
+                setEmail(event.target.value)
+              }
+              placeholder="twoj@email.pl"
+              autoComplete="email"
+              required
+            />
+          </div>
+
+          <div className="login-form__field">
+            <label htmlFor="password">Hasło</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(event) =>
+                setPassword(event.target.value)
+              }
+              placeholder="••••••••"
+              autoComplete="current-password"
+              required
+            />
+          </div>
+
+          {error && (
+            <div className="login-form__error">
+              {error}
+
+              {unverifiedEmail && (
+                <Link
+                  className="login-form__verify-link"
+                  to={`/verify-email?pending=${encodeURIComponent(
+                    unverifiedEmail,
+                  )}`}
+                >
+                  Wyślij ponownie wiadomość weryfikacyjną
+                </Link>
+              )}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="login-form__button"
+            disabled={loading}
+          >
+            {loading
+              ? 'Logowanie...'
+              : 'Zaloguj się'}
+          </button>
+
+          <div className="login-form__divider">
+            lub
+          </div>
+
+          <button
+            type="button"
+            className="login-form__google-button"
+            onClick={handleGoogleLogin}
+          >
+            Kontynuuj z Google
+          </button>
+        </form>
+
+        <p className="login-card__footer">
+          Nie masz jeszcze konta?{' '}
+          <Link to="/register">Załóż konto</Link>
+        </p>
+      </div>
+    </main>
+  )
+}
+
+export default LoginPage

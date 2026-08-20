@@ -1,0 +1,144 @@
+.training-center {
+  min-height: calc(100vh - 80px);
+  background: var(--color-black);
+  color: var(--color-white);
+  padding: 60px 0;
+}
+
+
+.training-center__container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+
+.training-center__header {
+  margin-bottom: 40px;
+}
+
+
+.training-center__eyebrow {
+  margin: 0 0 12px;
+  color: #2e9d67;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+
+.training-center__header h1 {
+  margin: 0 0 14px;
+  font-size: 42px;
+  letter-spacing: -0.04em;
+}
+
+
+.training-center__header p:last-child {
+  margin: 0;
+  color: #888;
+  font-size: 16px;
+}
+
+
+.training-center__tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #252525;
+}
+
+
+.training-center__tab {
+  padding: 12px 20px;
+  border: 1px solid #303030;
+  border-radius: 10px;
+  background: transparent;
+  color: #aaa;
+  cursor: pointer;
+}
+
+
+.training-center__tab--active {
+  background: #2e9d67;
+  border-color: #2e9d67;
+  color: white;
+}
+
+
+.training-dashboard {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+
+.training-card {
+  padding: 28px;
+  border: 1px solid #292929;
+  border-radius: 18px;
+  background: #111;
+}
+
+
+.training-card--main {
+  grid-column: span 2;
+}
+
+
+.training-card span {
+  display: block;
+  margin-bottom: 14px;
+  color: #777;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+
+.training-card h2 {
+  margin: 0 0 12px;
+  font-size: 24px;
+}
+
+
+.training-card p {
+  margin: 0 0 20px;
+  color: #888;
+}
+
+
+.training-card button {
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 10px;
+  background: #2e9d67;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+@media (max-width: 800px) {
+
+  .training-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+
+  .training-card--main {
+    grid-column: auto;
+  }
+
+
+  .training-center__tabs {
+    overflow-x: auto;
+  }
+
+
+  .training-center__header h1 {
+    font-size: 32px;
+  }
+}

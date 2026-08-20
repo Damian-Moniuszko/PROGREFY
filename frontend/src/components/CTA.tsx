@@ -14,13 +14,13 @@ function CTA() {
           </h2>
 
           <p className="cta__description">
-            Dołącz do FITBOOK i miej swój trening,
+            Dołącz do PROGREFY i miej swój trening,
             trenera oraz progres w jednym miejscu.
           </p>
 
           <div className="cta__actions">
             <button className="cta__button cta__button--primary">
-              Dołącz do FITBOOK
+              Dołącz do PROGREFY
               <span>→</span>
             </button>
 
@@ -31,7 +31,7 @@ function CTA() {
         </div>
 
         <div className="cta__background">
-          <span>FITBOOK</span>
+          <span>PROGREFY</span>
         </div>
       </div>
     </section>

@@ -9,6 +9,8 @@ import { trainerRoutes } from './routes/trainer.routes'
 import { authRoutes } from './routes/auth.routes'
 import { profileRoutes } from './routes/profile.routes'
 import { appointmentRoutes } from './routes/appointment.routes'
+import { accountRoutes } from './routes/account.routes'
+import { trainingRoutes } from './routes/training.routes'
 
 const app = Fastify({
   logger: true,
@@ -18,6 +20,7 @@ async function startServer() {
   try {
     await app.register(cors, {
       origin: true,
+      methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     })
 
     await app.register(fastifyJwt, {
@@ -32,12 +35,16 @@ async function startServer() {
 
     await app.register(appointmentRoutes)
 
+    await app.register(accountRoutes)
+
     await app.register(trainerRoutes)
+
+    await app.register(trainingRoutes)
 
     app.get('/api/health', async () => {
       return {
         status: 'ok',
-        message: 'FITBOOK backend is running',
+        message: 'PROGREFY backend is running',
       }
     })
 

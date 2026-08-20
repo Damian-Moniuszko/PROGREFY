@@ -32,7 +32,7 @@ function Features() {
     <section className="features">
       <div className="features__container">
         <div className="features__header">
-          <p className="features__eyebrow">FITBOOK ECOSYSTEM</p>
+          <p className="features__eyebrow">PROGREFY ECOSYSTEM</p>
 
           <h2 className="features__title">
             Wszystko w jednym miejscu.
