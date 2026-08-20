@@ -31,6 +31,7 @@ import ClientDetailsPage from './features/trainer/pages/ClientDetailsPage'
 
 import BookingPage from './features/appointments/pages/BookingPage'
 import TrainerAppointmentsPage from './features/appointments/pages/TrainerAppointmentsPage'
+import TrainerAvailabilityPage from './features/appointments/pages/TrainerAvailabilityPage'
 
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -75,6 +76,7 @@ function App() {
         <Route path="/trainer/dashboard" element={<TrainerDashboardPage />} />
         <Route path="/trainer/client/:id" element={<ClientDetailsPage />} />
         <Route path="/trainer/appointments" element={<TrainerAppointmentsPage />} />
+        <Route path="/trainer/availability" element={<TrainerAvailabilityPage trainerId="" />} />
 
         <Route path="/booking/:trainerId" element={<BookingPage trainerId="" slots={[]} />} />
 
