@@ -6,6 +6,7 @@ import TrainingPlanEditor from "../components/TrainingPlanEditor";
 import ClientProgress from "../components/ClientProgress";
 import ProgressHistory from "../components/ProgressHistory";
 import ProgressChart from "../components/ProgressChart";
+import ClientPhotos from "../components/ClientPhotos";
 import "./ClientDetailsPage.css";
 
 export default function ClientDetailsPage() {
@@ -74,6 +75,11 @@ export default function ClientDetailsPage() {
             <section>
               <h2>Wykres zmian</h2>
               <ProgressChart history={client.progressHistory ?? []} />
+            </section>
+
+            <section>
+              <h2>Zdjęcia progresu</h2>
+              <ClientPhotos photos={client.progressPhotos ?? []} />
             </section>
 
             <section>
