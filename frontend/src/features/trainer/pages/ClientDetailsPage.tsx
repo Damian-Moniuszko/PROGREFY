@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { getClientDetails } from "../api/trainer.api";
+import TrainingPlanEditor from "../components/TrainingPlanEditor";
 import "./ClientDetailsPage.css";
 
 export default function ClientDetailsPage() {
@@ -59,7 +60,11 @@ export default function ClientDetailsPage() {
 
             <section>
               <h2>Plan treningowy</h2>
-              <p>Edytor planu zostanie dodany w kolejnym etapie.</p>
+              <TrainingPlanEditor
+                token={token!}
+                clientId={id!}
+                initialPlan={client.trainingPlan ?? []}
+              />
             </section>
           </>
         )}
