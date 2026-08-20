@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AvailabilityCalendar from "../components/AvailabilityCalendar";
 import { createAppointment, TimeSlot } from "../api/appointment.api";
 import { useAuth } from "../../../context/AuthContext";
@@ -10,6 +11,7 @@ interface Props {
 
 export default function BookingPage({ trainerId, slots }: Props) {
   const { token } = useAuth();
+  const navigate = useNavigate();
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [message, setMessage] = useState("");
 
@@ -17,7 +19,7 @@ export default function BookingPage({ trainerId, slots }: Props) {
     if (!selectedSlot || !token) return;
 
     try {
-      await createAppointment(
+      const appointment = await createAppointment(
         {
           trainerId,
           slotId: selectedSlot.id,
@@ -25,7 +27,7 @@ export default function BookingPage({ trainerId, slots }: Props) {
         token,
       );
 
-      setMessage("Trening został zarezerwowany.");
+      navigate(`/checkout/${appointment.id}`);
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -54,7 +56,7 @@ export default function BookingPage({ trainerId, slots }: Props) {
           disabled={!selectedSlot}
           onClick={handleBooking}
         >
-          Potwierdź rezerwację
+          Przejdź do płatności
         </button>
 
         {message && <p>{message}</p>}
