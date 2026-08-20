@@ -5,13 +5,15 @@ import {
   getEarnings,
   getTrainerCalendar,
 } from "../api/trainer.api";
+import TrainerStats from "../components/TrainerStats";
+import ClientList from "../components/ClientList";
 import "./TrainerDashboardPage.css";
 
 export default function TrainerDashboardPage() {
   const { token } = useAuth();
 
-  const [clients, setClients] = useState<unknown[]>([]);
-  const [calendar, setCalendar] = useState<unknown[]>([]);
+  const [clients, setClients] = useState<any[]>([]);
+  const [calendar, setCalendar] = useState<any[]>([]);
   const [earnings, setEarnings] = useState<unknown>(null);
 
   useEffect(() => {
@@ -31,6 +33,7 @@ export default function TrainerDashboardPage() {
       } catch {
         setClients([]);
         setCalendar([]);
+        setEarnings(null);
       }
     }
 
@@ -46,27 +49,13 @@ export default function TrainerDashboardPage() {
           <span>Zarządzaj klientami, treningami i swoim grafikiem.</span>
         </header>
 
-        <section className="trainer-stats">
-          <article>
-            <strong>{clients.length}</strong>
-            <span>Klienci</span>
-          </article>
+        <TrainerStats
+          clientsCount={clients.length}
+          workoutsCount={calendar.length}
+          earnings={earnings}
+        />
 
-          <article>
-            <strong>{calendar.length}</strong>
-            <span>Dzisiejsze treningi</span>
-          </article>
-
-          <article>
-            <strong>{earnings ? "✓" : "0"}</strong>
-            <span>Przychód</span>
-          </article>
-        </section>
-
-        <section>
-          <h2>Ostatni klienci</h2>
-          <p>Lista klientów zostanie wyświetlona po podłączeniu danych.</p>
-        </section>
+        <ClientList clients={clients} />
       </div>
     </main>
   );
