@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import TrainingPlanHeader from "../components/TrainingPlanHeader";
 import WorkoutDayCard from "../components/WorkoutDayCard";
 import "./TrainingPlanPage.css";
 
@@ -30,9 +31,6 @@ interface TrainingPlan {
 }
 
 interface DashboardData {
-  user: {
-    firstName: string;
-  };
   currentPlan: TrainingPlan | null;
 }
 
@@ -69,12 +67,11 @@ export default function TrainingPlanPage() {
           <h2>Brak planu treningowego</h2>
         ) : (
           <>
-            <div className="plan-header">
-              <span>PLAN TRENINGOWY</span>
-              <h1>{plan.name}</h1>
-              <p>{plan.description}</p>
-              {plan.durationWeeks && <p>Czas trwania: {plan.durationWeeks} tygodni</p>}
-            </div>
+            <TrainingPlanHeader
+              name={plan.name}
+              description={plan.description}
+              durationWeeks={plan.durationWeeks}
+            />
 
             <div className="workouts">
               {plan.workouts.map((workout) => (
