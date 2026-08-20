@@ -29,6 +29,9 @@ import SettingsPage from './features/profile/pages/SettingsPage'
 import TrainerDashboardPage from './features/trainer/pages/TrainerDashboardPage'
 import ClientDetailsPage from './features/trainer/pages/ClientDetailsPage'
 
+import BookingPage from './features/appointments/pages/BookingPage'
+import TrainerAppointmentsPage from './features/appointments/pages/TrainerAppointmentsPage'
+
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 
@@ -71,6 +74,9 @@ function App() {
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/trainer/dashboard" element={<TrainerDashboardPage />} />
         <Route path="/trainer/client/:id" element={<ClientDetailsPage />} />
+        <Route path="/trainer/appointments" element={<TrainerAppointmentsPage />} />
+
+        <Route path="/booking/:trainerId" element={<BookingPage trainerId="" slots={[]} />} />
 
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/profile/:section" element={<ProfileSectionPage />} />
