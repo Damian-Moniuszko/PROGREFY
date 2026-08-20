@@ -13,17 +13,24 @@ interface Workout {
   exercises: any[];
 }
 
+interface SetValues {
+  weight: string;
+  reps: string;
+}
+
 export default function WorkoutSessionPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
 
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [session, setSession] = useState<any>(null);
+  const [values, setValues] = useState<Record<number, SetValues[]>>({});
+  const [savedSets, setSavedSets] = useState<Record<number, Set<number>>>({});
   const [error, setError] = useState("");
 
   useEffect(() => {
-    async function load() {
+    async function loadWorkout() {
       if (!token || !id) return;
 
       const response = await fetch(
@@ -31,18 +38,18 @@ export default function WorkoutSessionPage() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || "Nie udało się pobrać treningu");
+      if (response.status === 401) {
+        logout();
+        navigate("/login");
         return;
       }
 
+      const data = await response.json();
       setWorkout(data);
     }
 
-    load();
-  }, [id, token]);
+    loadWorkout();
+  }, [id, token, logout, navigate]);
 
   async function startWorkout() {
     if (!token || !workout) return;
@@ -61,6 +68,53 @@ export default function WorkoutSessionPage() {
 
     const data = await response.json();
     setSession(data.session);
+  }
+
+  function updateSetValue(exerciseId: number, setNumber: number, field: keyof SetValues, value: string) {
+    setValues((current) => {
+      const sets = [...(current[exerciseId] ?? [])];
+      sets[setNumber - 1] = {
+        ...(sets[setNumber - 1] ?? { weight: "", reps: "" }),
+        [field]: value,
+      };
+
+      return { ...current, [exerciseId]: sets };
+    });
+  }
+
+  function getSetValue(exerciseId: number, setNumber: number) {
+    return values[exerciseId]?.[setNumber - 1] ?? { weight: "", reps: "" };
+  }
+
+  function isSetSaved(exerciseId: number, setNumber: number) {
+    return savedSets[exerciseId]?.has(setNumber) ?? false;
+  }
+
+  async function saveSet(exerciseId: number, setNumber: number) {
+    if (!token || !session) return;
+
+    const set = getSetValue(exerciseId, setNumber);
+
+    await fetch(`http://localhost:3000/api/training/session/${session.id}/set`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        exerciseId,
+        setNumber,
+        weight: Number(set.weight),
+        reps: Number(set.reps),
+      }),
+    });
+
+    setSavedSets((current) => {
+      const next = { ...current };
+      next[exerciseId] = new Set(current[exerciseId] ?? []);
+      next[exerciseId].add(setNumber);
+      return next;
+    });
   }
 
   if (!workout) {
@@ -88,10 +142,10 @@ export default function WorkoutSessionPage() {
               key={exercise.id}
               exercise={exercise}
               index={index}
-              getSetValue={() => ({ weight: "", reps: "" })}
-              isSetSaved={() => false}
-              onChange={() => undefined}
-              onSave={() => undefined}
+              getSetValue={getSetValue}
+              isSetSaved={isSetSaved}
+              onChange={updateSetValue}
+              onSave={saveSet}
             />
           ))
         )}
