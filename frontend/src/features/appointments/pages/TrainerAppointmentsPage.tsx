@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import { getAppointments, cancelAppointment } from "../api/appointment.api";
+import {
+  getAppointments,
+  cancelAppointment,
+} from "../api/appointment.api";
+import {
+  confirmAppointment,
+  completeAppointment,
+} from "../api/appointmentStatus.api";
 import AppointmentCard from "../components/AppointmentCard";
 
 export default function TrainerAppointmentsPage() {
@@ -22,17 +29,35 @@ export default function TrainerAppointmentsPage() {
     loadAppointments();
   }, [token]);
 
+  function updateStatus(id: string, status: string) {
+    setAppointments((current) =>
+      current.map((appointment) =>
+        appointment.id === id
+          ? { ...appointment, status }
+          : appointment,
+      ),
+    );
+  }
+
   async function handleCancel(id: string) {
     if (!token) return;
 
     await cancelAppointment(id, token);
-    setAppointments((current) =>
-      current.map((appointment) =>
-        appointment.id === id
-          ? { ...appointment, status: "cancelled" }
-          : appointment,
-      ),
-    );
+    updateStatus(id, "cancelled");
+  }
+
+  async function handleConfirm(id: string) {
+    if (!token) return;
+
+    await confirmAppointment(id, token);
+    updateStatus(id, "confirmed");
+  }
+
+  async function handleComplete(id: string) {
+    if (!token) return;
+
+    await completeAppointment(id, token);
+    updateStatus(id, "completed");
   }
 
   return (
@@ -52,6 +77,8 @@ export default function TrainerAppointmentsPage() {
                 key={appointment.id}
                 appointment={appointment}
                 onCancel={handleCancel}
+                onConfirm={handleConfirm}
+                onComplete={handleComplete}
               />
             ))}
           </div>
