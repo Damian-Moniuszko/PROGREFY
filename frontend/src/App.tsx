@@ -8,17 +8,18 @@ import {
 import LandingPage from './pages/LandingPage'
 import TrainersPage from './pages/TrainersPage'
 import TrainerPage from './pages/TrainerPage'
-import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
-import RegisterPage from './pages/RegisterPage'
-import EmailVerificationPage from './pages/EmailVerificationPage'
 import TrainerDashboardPage from './pages/TrainerDashboardPage'
 import ProfilePage from './pages/ProfilePage'
 import ProfileSectionPage from './pages/ProfileSectionPage'
 import TermsPage from './pages/TermsPage'
 import ReportPage from './pages/ReportPage'
 import SettingsPage from './pages/SettingsPage'
-import GoogleCallbackPage from './pages/GoogleCallbackPage'
+
+import LoginPage from './features/auth/pages/LoginPage'
+import RegisterPage from './features/auth/pages/RegisterPage'
+import EmailVerificationPage from './features/auth/pages/EmailVerificationPage'
+import OAuthCallbackPage from './features/auth/pages/OAuthCallbackPage'
 
 import TrainingCenterPage from './features/training/pages/TrainingCenterPage'
 import TrainingPlanPage from './features/training/pages/TrainingPlanPage'
@@ -62,7 +63,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/email-verification" element={<EmailVerificationPage />} />
         <Route path="/verify-email" element={<EmailVerificationPage />} />
-        <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+        <Route path="/auth/google/callback" element={<OAuthCallbackPage />} />
 
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/trainer/dashboard" element={<TrainerDashboardPage />} />
