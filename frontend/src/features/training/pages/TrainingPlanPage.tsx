@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import TrainingPlanHeader from "../components/TrainingPlanHeader";
 import WorkoutDayCard from "../components/WorkoutDayCard";
+import { getTrainingDashboard } from "../api/training.api";
 import "./TrainingPlanPage.css";
 
 interface Exercise {
@@ -43,16 +44,12 @@ export default function TrainingPlanPage() {
     async function loadPlan() {
       if (!token) return;
 
-      const response = await fetch(
-        "http://localhost:3000/api/training/dashboard",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setDashboard(await response.json());
+      try {
+        const data = await getTrainingDashboard(token);
+        setDashboard(data as DashboardData);
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     loadPlan();
