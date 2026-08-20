@@ -7,6 +7,8 @@ import {
 } from "../api/trainer.api";
 import TrainerStats from "../components/TrainerStats";
 import ClientList from "../components/ClientList";
+import CalendarPreview from "../components/CalendarPreview";
+import EarningsCard from "../components/EarningsCard";
 import "./TrainerDashboardPage.css";
 
 export default function TrainerDashboardPage() {
@@ -56,6 +58,10 @@ export default function TrainerDashboardPage() {
         />
 
         <ClientList clients={clients} />
+
+        <CalendarPreview events={calendar} />
+
+        <EarningsCard earnings={earnings as any} />
       </div>
     </main>
   );
