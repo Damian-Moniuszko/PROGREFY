@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { getClientDetails } from "../api/trainer.api";
 import TrainingPlanEditor from "../components/TrainingPlanEditor";
+import ClientProgress from "../components/ClientProgress";
 import "./ClientDetailsPage.css";
 
 export default function ClientDetailsPage() {
@@ -56,6 +57,11 @@ export default function ClientDetailsPage() {
               <h2>Parametry</h2>
               <p>Waga: {client.weight ?? "-"}</p>
               <p>Wzrost: {client.height ?? "-"}</p>
+            </section>
+
+            <section>
+              <h2>Postępy klienta</h2>
+              <ClientProgress progress={client.progress ?? null} />
             </section>
 
             <section>
