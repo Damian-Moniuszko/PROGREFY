@@ -4,9 +4,10 @@ import { createPayment } from "../api/payment.api";
 
 interface Props {
   appointmentId: string;
+  onSuccess?: () => void;
 }
 
-export default function PaymentButton({ appointmentId }: Props) {
+export default function PaymentButton({ appointmentId, onSuccess }: Props) {
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -27,6 +28,8 @@ export default function PaymentButton({ appointmentId }: Props) {
       setMessage(
         `Płatność utworzona: ${payment.status}`,
       );
+
+      onSuccess?.();
     } catch (error) {
       setMessage(
         error instanceof Error
