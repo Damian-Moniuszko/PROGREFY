@@ -29,6 +29,18 @@ export function getWorkout(id: string, token: string) {
   return request(`/workout/${id}`, { token });
 }
 
+export function getTrainingDashboard(token: string) {
+  return request("/dashboard", { token });
+}
+
+export function getTrainingHistory(token: string) {
+  return request("/history", { token });
+}
+
+export function getTrainingProgress(token: string) {
+  return request("/progress", { token });
+}
+
 export function startWorkout(workoutId: number, token: string) {
   return request("/session/start", {
     token,
